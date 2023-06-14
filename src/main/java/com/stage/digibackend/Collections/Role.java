@@ -1,4 +1,4 @@
-package com.stage.digibackend.Entity;
+package com.stage.digibackend.Collections;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

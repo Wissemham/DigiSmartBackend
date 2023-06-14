@@ -1,7 +1,7 @@
 package com.stage.digibackend.security.services;
 
 
-import com.stage.digibackend.Entity.User;
+import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

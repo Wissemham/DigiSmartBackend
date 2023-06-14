@@ -1,4 +1,4 @@
-package com.stage.digibackend.Entity;
+package com.stage.digibackend.Collections;
 
 public enum ERole {
   SUPER_ADMIN,

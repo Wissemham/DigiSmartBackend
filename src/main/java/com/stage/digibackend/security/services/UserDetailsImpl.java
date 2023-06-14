@@ -1,7 +1,7 @@
 package com.stage.digibackend.security.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.stage.digibackend.Entity.User;
+import com.stage.digibackend.Collections.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

@@ -1,7 +1,7 @@
 package com.stage.digibackend.repository;
 
 
-import com.stage.digibackend.Entity.User;
+import com.stage.digibackend.Collections.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package com.stage.digibackend.security.services;
 
-import com.stage.digibackend.Entity.ERole;
-import com.stage.digibackend.Entity.Role;
+import com.stage.digibackend.Collections.ERole;
+import com.stage.digibackend.Collections.Role;
 import com.stage.digibackend.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

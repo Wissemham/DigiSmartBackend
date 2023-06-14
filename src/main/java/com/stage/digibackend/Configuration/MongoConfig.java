@@ -14,11 +14,9 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     protected String getDatabaseName() {
         return "Test";
     }
-
     @Override
     protected void configureClientSettings(MongoClientSettings.Builder builder) {
         // Configure MongoDB connection settings
         builder.applyConnectionString(new ConnectionString("mongodb+srv://wissemhammouda:wissemh18@cluster0.jn5c3zo.mongodb.net/?retryWrites=true&w=majority"));
     }
-
 }

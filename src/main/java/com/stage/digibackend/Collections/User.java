@@ -1,4 +1,4 @@
-package com.stage.digibackend.Entity;
+package com.stage.digibackend.Collections;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -35,6 +35,9 @@ public class User {
   @NotBlank
   @Size(max = 120)
   private String password;
+
+  private String verificationCode;
+  private boolean enabled;
 
   @DBRef
   private Set<Role> roles = new HashSet<>();

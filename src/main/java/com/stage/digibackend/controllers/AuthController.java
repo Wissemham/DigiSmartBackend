@@ -1,8 +1,8 @@
 package com.stage.digibackend.controllers;
 
-import com.stage.digibackend.Entity.ERole;
-import com.stage.digibackend.Entity.Role;
-import com.stage.digibackend.Entity.User;
+import com.stage.digibackend.Collections.ERole;
+import com.stage.digibackend.Collections.Role;
+import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.payload.request.LoginRequest;
 import com.stage.digibackend.payload.request.SignupRequest;
 import com.stage.digibackend.payload.response.JwtResponse;
