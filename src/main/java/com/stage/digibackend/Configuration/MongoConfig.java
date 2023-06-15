@@ -17,7 +17,6 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     @Override
     protected void configureClientSettings(MongoClientSettings.Builder builder) {
         // Configure MongoDB connection settings
-        builder.applyConnectionString(
-                new ConnectionString("mongodb+srv://wissemhammouda:wissemh18@cluster0.jn5c3zo.mongodb.net/?retryWrites=true&w=majority"));
+        builder.applyConnectionString(new ConnectionString("mongodb+srv://wissemhammouda:wissemh18@cluster0.jn5c3zo.mongodb.net/?retryWrites=true&w=majority"));
     }
 }

@@ -9,6 +9,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Document(collection = "users")
@@ -37,10 +38,14 @@ public class User {
   private String password;
 
   private String verificationCode;
+  private String verify;
   private boolean enabled;
 
   @DBRef
   private Set<Role> roles = new HashSet<>();
+
+  @DBRef
+  private User admin;
 
   public User() {
   }

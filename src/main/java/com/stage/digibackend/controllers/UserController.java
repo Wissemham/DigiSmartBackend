@@ -45,6 +45,27 @@ public class UserController {
     public String deleteUser(@PathVariable String userId)
     {
         return iUserService.deleteUser(userId);    }
+////Liste des admin
+    @GetMapping("/ListAdmin")
+    List<User> ListAdmin(){
+        return iUserService.ListAdmin();
+    }
+/////Liste de client pour chaque admin
+    @GetMapping("/ListClientByAdmin/{user}")
+    List<User> ListClient(@PathVariable String user){
+        return iUserService.ListClient(user);
+    }
+
+    ///reset password
+    @PutMapping("/resetPwd/{email}")
+    void verifypwd(@PathVariable String email){
+         iUserService.resetPassword(email);
+    }
+
+    @GetMapping("/verifiePwd/{code}/{pwd}")
+    String verifiePwd(@PathVariable String code,@PathVariable String pwd){
+        return iUserService.verifiePwd(code,pwd);
+    }
 
 
 }
