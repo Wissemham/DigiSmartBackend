@@ -10,5 +10,9 @@ public interface IUserservice {
     User getUserById(String userId);
     User updateUser(String userId,User userRequest);
     String deleteUser(String userId);
+    List<User> ListAdmin();
+    List<User> ListClient(String admin);
+    void resetPassword(String email);
+    String verifiePwd(String code, String pwd);
 }
 

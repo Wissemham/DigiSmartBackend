@@ -11,8 +11,11 @@ import com.stage.digibackend.repository.RoleRepository;
 import com.stage.digibackend.repository.UserRepository;
 import com.stage.digibackend.security.jwt.JwtUtils;
 import com.stage.digibackend.security.services.UserDetailsImpl;
+import com.stage.digibackend.services.Userservice;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,7 +23,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,9 +70,15 @@ public class AuthController {
 												 userDetails.getEmail(), 
 												 roles));
 	}
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+	@Autowired
+	private JavaMailSender mailSender;
+	@Autowired
+	private Userservice userservice;
+	@PostMapping("/signup/{id}")
+	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,String siteURL,@PathVariable("id") String idUser) throws MessagingException, UnsupportedEncodingException {
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
 			return ResponseEntity
 					.badRequest()
@@ -114,10 +125,21 @@ public class AuthController {
 				}
 			});
 		}
-
+		User admin = userRepository.findById(idUser).get();
 		user.setRoles(roles);
+		//userRepository.save(user);
+		String encodedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encodedPassword);
+
+		String randomCode = RandomStringUtils.random(64, true, true);
+		user.setVerificationCode(randomCode);
+		user.setEnabled(false);
+		user.setAdmin(admin);
 		userRepository.save(user);
 
+
+		System.out.println("registre");
+		userservice.sendVerificationEmail(user, siteURL);
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
 }
