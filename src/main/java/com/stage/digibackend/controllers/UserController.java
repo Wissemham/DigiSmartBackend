@@ -1,6 +1,8 @@
 package com.stage.digibackend.controllers;
 
 import com.stage.digibackend.Collections.User;
+import com.stage.digibackend.dto.PasswordResetResponse;
+import com.stage.digibackend.dto.PasswordRessetRequestDto;
 import com.stage.digibackend.services.IUserservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +17,6 @@ public class UserController {
     @Autowired
     IUserservice iUserService;
     //Add a user
-
     @PostMapping("/adduser")
     public String addUser(@RequestBody User user)
     {
@@ -66,6 +67,10 @@ public class UserController {
     String verifiePwd(@PathVariable String code,@PathVariable String pwd){
         return iUserService.verifiePwd(code,pwd);
     }
-
+//reset password with sms
+@PutMapping("/sendOtp/{phone}")
+PasswordResetResponse sendSms(@PathVariable String phone){
+   return iUserService.sendOTPForPasswordResest(phone);
+}
 
 }

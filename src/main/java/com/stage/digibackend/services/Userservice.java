@@ -1,7 +1,13 @@
 package com.stage.digibackend.services;
 
 import com.stage.digibackend.Collections.User;
+import com.stage.digibackend.Configuration.TwilioConfig;
+import com.stage.digibackend.dto.OtpStatus;
+import com.stage.digibackend.dto.PasswordResetResponse;
+import com.stage.digibackend.dto.PasswordRessetRequestDto;
 import com.stage.digibackend.repository.UserRepository;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,12 +27,10 @@ public class Userservice implements IUserservice {
     UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+    @Autowired
+    private TwilioConfig twilioConfig;
     @Autowired
     private JavaMailSender mailSender;
-
-
-
     public void register(User user, String siteURL) throws UnsupportedEncodingException, MessagingException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -53,18 +57,13 @@ public class Userservice implements IUserservice {
         System.out.println("send");
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-
         helper.setFrom(fromAddress, senderName);
         helper.setTo(toAddress);
         helper.setSubject(subject);
-
         content = content.replace("[[name]]", user.getUsername());
         String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
-
         content = content.replace("[[URL]]", verifyURL);
-
         helper.setText(content, true);
-
         mailSender.send(message);
     }
 
@@ -117,7 +116,6 @@ public class Userservice implements IUserservice {
         userRepository.save(user);
         //sendSms(randomCode);
 
-
     }
 
     @Override
@@ -134,5 +132,26 @@ public class Userservice implements IUserservice {
         return "Verifie your code";
     }
 
+    @Override
+    public PasswordResetResponse sendOTPForPasswordResest(String phone) {
+        PasswordResetResponse response=null;
+try {
+        PhoneNumber reciever=new PhoneNumber(phone);
+        PhoneNumber sender=new PhoneNumber(twilioConfig.getTrialNumber());
+        String randomCode = RandomStringUtils.random(6, true, true);
+        String otpMessage="Dear user, your OTP is "+randomCode+", use this passcode to resset your password";
+        Message.creator(reciever,sender,otpMessage).create();
+   /* User user = userRepository.existsByPhone(phone);
+    System.out.println(user);
+    user.setVerify(randomCode);
+    userRepository.save(user);*/
+
+    response=new PasswordResetResponse(OtpStatus.DELIVERED,otpMessage);}
+catch (Exception exp)
+{
+    response=new PasswordResetResponse(OtpStatus.FAILED,exp.getMessage());}
+        return response;
+
+    }
 
 }

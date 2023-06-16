@@ -1,6 +1,8 @@
 package com.stage.digibackend.services;
 
 import com.stage.digibackend.Collections.User;
+import com.stage.digibackend.dto.PasswordResetResponse;
+import com.stage.digibackend.dto.PasswordRessetRequestDto;
 
 import java.util.List;
 
@@ -14,5 +16,7 @@ public interface IUserservice {
     List<User> ListClient(String admin);
     void resetPassword(String email);
     String verifiePwd(String code, String pwd);
+    //reser password with phone number
+    PasswordResetResponse sendOTPForPasswordResest(String phone);
 }
 

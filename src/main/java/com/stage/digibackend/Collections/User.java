@@ -36,6 +36,7 @@ public class User {
   @NotBlank
   @Size(max = 120)
   private String password;
+  private String phone;
 
   private String verificationCode;
   private String verify;
