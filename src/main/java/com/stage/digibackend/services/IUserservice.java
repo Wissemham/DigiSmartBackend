@@ -1,8 +1,8 @@
 package com.stage.digibackend.services;
 
-import com.stage.digibackend.Collections.User;
-
 import java.util.List;
+
+import com.stage.digibackend.Collections.User;
 
 public interface IUserservice {
     String addUser(User user);
@@ -14,6 +14,5 @@ public interface IUserservice {
     List<User> ListClient(String admin);
     void resetPassword(String email);
     String verifiePwd(String code, String pwd);
-
 }
 

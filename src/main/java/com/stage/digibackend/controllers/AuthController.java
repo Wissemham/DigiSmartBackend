@@ -47,6 +47,11 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.*;
+import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -125,6 +130,8 @@ public class AuthController implements DisposableBean, InitializingBean {
 				userLocation));
 
 	}
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 
 		/*Authentication authentication = authenticationManager.authenticate(
@@ -162,6 +169,10 @@ public class AuthController implements DisposableBean, InitializingBean {
 
 
 
+	@Autowired
+	private JavaMailSender mailSender;
+	@Autowired
+	private Userservice userservice;
 	@PostMapping("/signup/{id}")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,String siteURL,@PathVariable("id") String idUser) throws MessagingException, UnsupportedEncodingException {
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
@@ -221,11 +232,8 @@ public class AuthController implements DisposableBean, InitializingBean {
 		user.setEnabled(false);
 		user.setAdmin(admin);
 		userRepository.save(user);
-        // Retrieve machine name and location
-		/*String machineName = request.getRemoteHost();
-		String location = retrieveLocationFromIP(request.getRemoteAddr());
-		userservice.sendVerificationEmail(user, siteURL, machineName, location);
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));*/
+
+
 		System.out.println("registre");
 		userservice.sendVerificationEmail(user, siteURL);
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));

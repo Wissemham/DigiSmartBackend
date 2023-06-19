@@ -1,9 +1,6 @@
 package com.stage.digibackend.security;
 
 
-import com.stage.digibackend.security.jwt.AuthEntryPointJwt;
-import com.stage.digibackend.security.jwt.AuthTokenFilter;
-import com.stage.digibackend.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +9,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -21,8 +16,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+
+import com.stage.digibackend.security.jwt.AuthEntryPointJwt;
+import com.stage.digibackend.security.jwt.AuthTokenFilter;
+import com.stage.digibackend.security.services.UserDetailsServiceImpl;
 
 @Configuration
 //@EnableWebSecurity
@@ -78,12 +76,12 @@ public class WebSecurityConfig {
     http.cors().and().csrf().disable()
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-        .authorizeRequests().antMatchers("/api/auth/**","/addRole/**","/resetPwd/**").permitAll()
+        .authorizeRequests().antMatchers("/api/auth/**","/addRole/**","/users/**","/resetPwd/**").permitAll()
         .antMatchers("/api/test/**").permitAll()
         .anyRequest().authenticated();
-		http.authenticationProvider(authenticationProvider());
-		http.sessionManagement()
-						.maximumSessions(1);
+    //http.sessionManagement().maximumSessions(2).maxSessionsPreventsLogin(false).expiredUrl("/session-expired").and();
+    http.authenticationProvider(authenticationProvider());
+
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
