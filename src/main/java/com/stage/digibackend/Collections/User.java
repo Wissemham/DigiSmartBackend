@@ -41,6 +41,7 @@ public class User {
   private String verify;
   private boolean enabled;
 
+
   @DBRef
   private Set<Role> roles = new HashSet<>();
 
@@ -55,6 +56,8 @@ public class User {
     this.email = email;
     this.password = password;
   }
+
+
 
   public String getId() {
     return id;
