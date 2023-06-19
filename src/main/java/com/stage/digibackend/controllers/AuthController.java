@@ -130,7 +130,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 				userLocation));
 
 	}
-	@Autowired
+	/*@Autowired
 	private PasswordEncoder passwordEncoder;
 
 
@@ -169,10 +169,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 
 
 
-	@Autowired
-	private JavaMailSender mailSender;
-	@Autowired
-	private Userservice userservice;
+
 	@PostMapping("/signup/{id}")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,String siteURL,@PathVariable("id") String idUser) throws MessagingException, UnsupportedEncodingException {
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {

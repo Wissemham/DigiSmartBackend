@@ -100,7 +100,13 @@ public class Userservice implements IUserservice {
 
     @Override
     public List<User> ListAdmin() {
-        return userRepository.findByRoleNot("6489c4d71478ef0f49b46b90");
+        return   userRepository.findByRoleNot("6489c4d71478ef0f49b46b90");
+    }
+
+
+    @Override
+    public List<User> ListAllClient() {
+        return userRepository.findByRoleNot("648a2d798fce3961ef16dc4e");
     }
 
     @Override

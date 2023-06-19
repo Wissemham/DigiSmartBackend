@@ -1,6 +1,12 @@
 package com.stage.digibackend.controllers;
 
 import java.io.UnsupportedEncodingException;
+import com.stage.digibackend.Collections.User;
+import com.stage.digibackend.services.IUserservice;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,8 +55,12 @@ public class UserController {
     {
         return iUserService.addUser(user);
     }
+
+
+
+
     //get all users
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+  //@PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
     @GetMapping("/get")
     public List<User> getUsers()
     {
@@ -78,6 +88,12 @@ public class UserController {
     List<User> ListAdmin(){
         return iUserService.ListAdmin();
     }
+
+    //  LISTE ALL CLIENT IN DATABASE
+    @GetMapping("/listAllClient")
+    List<User> ListAllClient(){
+        return iUserService.ListAllClient();
+    }
 /////Liste de client pour chaque admin
     @GetMapping("/ListClientByAdmin/{user}")
     List<User> ListClient(@PathVariable String user){
@@ -87,7 +103,9 @@ public class UserController {
     ///reset password
     @PutMapping("/resetPwd/{email}")
     void verifypwd(@PathVariable String email){
-         iUserService.resetPassword(email);
+
+        System.out.println("sending mail"+email);
+        iUserService.resetPassword(email);
     }
 
     @GetMapping("/verifiePwd/{code}/{pwd}")

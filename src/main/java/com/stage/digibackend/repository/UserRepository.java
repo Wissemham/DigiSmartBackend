@@ -25,4 +25,5 @@ public interface UserRepository extends MongoRepository<User, String> {
   User getUserByUsername(String username);
   @Query(value = "{'verify' : ?0}")
   User getUserCD(String code);
+
 }

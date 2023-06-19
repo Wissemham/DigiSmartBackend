@@ -76,8 +76,10 @@ public class WebSecurityConfig {
     http.cors().and().csrf().disable()
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-        .authorizeRequests().antMatchers("/api/auth/**","/addRole/**","/users/**","/resetPwd/**").permitAll()
-        .antMatchers("/api/test/**").permitAll()
+
+        .authorizeRequests().antMatchers("/api/auth/**","/addRole/**","/users/**","/resetPwd/**","/users/listAllClient").permitAll()
+
+
         .anyRequest().authenticated();
     //http.sessionManagement().maximumSessions(2).maxSessionsPreventsLogin(false).expiredUrl("/session-expired").and();
     http.authenticationProvider(authenticationProvider());
