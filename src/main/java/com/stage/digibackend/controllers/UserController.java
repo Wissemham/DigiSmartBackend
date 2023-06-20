@@ -67,7 +67,7 @@ public class UserController {
         return iUserService.getAllUsers();
     }
     //get user by id
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+//    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
     @GetMapping("/{userId}")
     public User getUser(@PathVariable String userId)
     {
