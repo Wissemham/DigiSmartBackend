@@ -131,23 +131,23 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PostMapping("/AddAdmin")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRequest signUpRequest, String siteURL) throws MessagingException, UnsupportedEncodingException {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRequest userRequest, String siteURL) throws MessagingException, UnsupportedEncodingException {
+        if (userRepository.existsByUsername(userRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+        User user = new User(userRequest.getUsername(),
+                userRequest.getEmail(),
+                encoder.encode(userRequest.getPassword()));
 
 
         Set<Role> roles = new HashSet<>();
@@ -158,10 +158,13 @@ public class UserController {
 
                 roles.add(r);
         user.setRoles( roles);
-        //userRepository.save(user);
+
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-
+        String Telephone = "+216"+userRequest.getTelephone();
+        System.out.println(userRequest.getTelephone());
+        user.setGenre(userRequest.getGenre());
+        user.setTelephone(Telephone);
         String randomCode = RandomStringUtils.random(64, true, true);
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
@@ -170,28 +173,28 @@ public class UserController {
 
 
         System.out.println("registre");
-        userservice.sendVerificationEmail(user, siteURL);
+        //userservice.sendVerificationEmail(user, siteURL);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
     @PostMapping("/AddClient/{id}")
-    public ResponseEntity<?> registerClient(@Valid @RequestBody SignupRequest signUpRequest, String siteURL, @PathVariable("id") String idUser) throws MessagingException, UnsupportedEncodingException {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+    public ResponseEntity<?> registerClient(@Valid @RequestBody UserRequest userRequest, String siteURL, @PathVariable("id") String idUser) throws MessagingException, UnsupportedEncodingException {
+        if (userRepository.existsByUsername(userRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+        User user = new User(userRequest.getUsername(),
+                userRequest.getEmail(),
+                encoder.encode(userRequest.getPassword()));
 
 
         Set<Role> roles = new HashSet<>();
@@ -205,7 +208,9 @@ public class UserController {
         //userRepository.save(user);
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-
+        String Telephone = "+216"+userRequest.getTelephone();
+        user.setGenre(userRequest.getGenre());
+        user.setTelephone(Telephone);
         String randomCode = RandomStringUtils.random(64, true, true);
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
