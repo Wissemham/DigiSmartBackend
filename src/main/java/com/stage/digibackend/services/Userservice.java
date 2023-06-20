@@ -1,24 +1,22 @@
 package com.stage.digibackend.services;
 
 import com.stage.digibackend.Collections.User;
-import com.stage.digibackend.Configuration.TwilioConfig;
+import com.stage.digibackend.Configuration.TunisieSmsConfig;
 import com.stage.digibackend.dto.OtpStatus;
 import com.stage.digibackend.dto.PasswordResetResponse;
-import com.stage.digibackend.dto.PasswordRessetRequestDto;
 import com.stage.digibackend.repository.UserRepository;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.tree.BooleanSignature;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 @Service
@@ -28,7 +26,7 @@ public class Userservice implements IUserservice {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private TwilioConfig twilioConfig;
+    private TunisieSmsConfig tunisiesmsConfig;
     @Autowired
     private JavaMailSender mailSender;
     public void register(User user, String siteURL) throws UnsupportedEncodingException, MessagingException {
@@ -131,8 +129,32 @@ public class Userservice implements IUserservice {
         }
         return "Verifie your code";
     }
-
     @Override
+    public PasswordResetResponse sendOTPForPasswordResest(String phone) {
+        PasswordResetResponse response=null;
+        try {
+            String mySender = tunisiesmsConfig.getSender();
+            String myKey= tunisiesmsConfig.getKey();
+            String randomCode = RandomStringUtils.random(6, true, true);
+            String otpMessage="OTP:"+randomCode;
+            String Url_str = "https://www.tunisiesms.tn/client/Api/Api.aspx?fct=sms&key=MYKEY&mobile=216XXXXXXXX&sms=Hello+World&sender=YYYYYYYY";
+            Url_str = Url_str.replace("MYKEY", myKey);
+            Url_str = Url_str.replace("216XXXXXXXX", phone);
+            Url_str = Url_str.replace("Hello+World", otpMessage);
+            Url_str = Url_str.replace("YYYYYYYY", mySender);
+            URL myURL = new URL(Url_str);
+            URLConnection myURLConnection = myURL.openConnection();
+            myURLConnection.connect();
+            response=new PasswordResetResponse(OtpStatus.DELIVERED,Url_str);
+
+        } catch (Exception exp) {
+            response=new PasswordResetResponse(OtpStatus.FAILED,exp.getMessage());}
+
+        return response;
+
+    }
+
+   /* @Override
     public PasswordResetResponse sendOTPForPasswordResest(String phone) {
         PasswordResetResponse response=null;
 try {
@@ -146,12 +168,12 @@ try {
     user.setVerify(randomCode);
     userRepository.save(user);*/
 
-    response=new PasswordResetResponse(OtpStatus.DELIVERED,otpMessage);}
+   /* response=new PasswordResetResponse(OtpStatus.DELIVERED,otpMessage);}
 catch (Exception exp)
 {
     response=new PasswordResetResponse(OtpStatus.FAILED,exp.getMessage());}
         return response;
 
-    }
+    }*/
 
 }
