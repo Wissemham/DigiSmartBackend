@@ -67,7 +67,7 @@ public class UserController {
         return iUserService.getAllUsers();
     }
     //get user by id
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+//    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
     @GetMapping("/{userId}")
     public User getUser(@PathVariable String userId)
     {
@@ -102,7 +102,7 @@ public class UserController {
 
     ///reset password
     @PutMapping("/resetPwd/{email}")
-    void verifypwd(@PathVariable String email){
+    void verifypwd(@PathVariable String email) throws MessagingException, UnsupportedEncodingException {
 
         System.out.println("sending mail"+email);
         iUserService.resetPassword(email);
