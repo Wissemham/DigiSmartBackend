@@ -8,7 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.tree.BooleanSignature;
+
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
