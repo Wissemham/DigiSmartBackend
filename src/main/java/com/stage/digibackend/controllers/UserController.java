@@ -165,6 +165,7 @@ public class UserController {
         System.out.println(userRequest.getTelephone());
         user.setGenre(userRequest.getGenre());
         user.setTelephone(Telephone);
+        user.setAdresse(userRequest.getAdresse());
         String randomCode = RandomStringUtils.random(64, true, true);
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
@@ -211,6 +212,7 @@ public class UserController {
         String Telephone = "+216"+userRequest.getTelephone();
         user.setGenre(userRequest.getGenre());
         user.setTelephone(Telephone);
+        user.setAdresse(userRequest.getAdresse());
         String randomCode = RandomStringUtils.random(64, true, true);
         user.setVerificationCode(randomCode);
         user.setEnabled(false);

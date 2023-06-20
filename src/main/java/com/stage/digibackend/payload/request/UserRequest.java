@@ -25,6 +25,11 @@ public class UserRequest {
     private String Telephone;
     @NotBlank
     private String Genre;
+    private String Adresse;
+
+    public String getAdresse(){return this.Adresse;}
+
+    public void setAdresse(String Adresse){this.Adresse = Adresse;}
 
     public String getTelephone(){
         return this.Telephone;
