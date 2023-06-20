@@ -9,6 +9,7 @@ public interface IUserservice {
     String addUser(User user);
     List<User> getAllUsers();
     User getUserById(String userId);
+    User getUserBytelephone(String telephone);
     User updateUser(String userId,User userRequest);
     String deleteUser(String userId);
     List<User> ListAdmin();

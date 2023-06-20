@@ -81,9 +81,15 @@ public class Userservice implements IUserservice {
     }
 
     @Override
+    public User getUserBytelephone(String telephone) {
+        return userRepository.findByTelephone(telephone);
+    }
+
+    @Override
     public User updateUser(String userId,User userRequest) {
         //get the document from db with the specific id
         User existingUser= userRepository.findById(userId).get();
+        existingUser.setTelephone(userRequest.getTelephone());
         existingUser.setEmail(userRequest.getEmail());
         existingUser.setRoles(userRequest.getRoles());
         existingUser.setPassword(userRequest.getPassword());
@@ -130,22 +136,34 @@ public class Userservice implements IUserservice {
         return "Verifie your code";
     }
     @Override
-    public PasswordResetResponse sendOTPForPasswordResest(String phone) {
+    public PasswordResetResponse sendOTPForPasswordResest(String telephone) {
         PasswordResetResponse response=null;
         try {
+
             String mySender = tunisiesmsConfig.getSender();
             String myKey= tunisiesmsConfig.getKey();
             String randomCode = RandomStringUtils.random(6, true, true);
-            String otpMessage="OTP:"+randomCode;
-            String Url_str = "https://www.tunisiesms.tn/client/Api/Api.aspx?fct=sms&key=MYKEY&mobile=216XXXXXXXX&sms=Hello+World&sender=YYYYYYYY";
-            Url_str = Url_str.replace("MYKEY", myKey);
-            Url_str = Url_str.replace("216XXXXXXXX", phone);
-            Url_str = Url_str.replace("Hello+World", otpMessage);
-            Url_str = Url_str.replace("YYYYYYYY", mySender);
-            URL myURL = new URL(Url_str);
-            URLConnection myURLConnection = myURL.openConnection();
-            myURLConnection.connect();
-            response=new PasswordResetResponse(OtpStatus.DELIVERED,Url_str);
+            User user = getUserBytelephone(telephone);
+            System.out.println(user);
+            if(user!=null)
+            {
+                user.setVerify(randomCode);
+                userRepository.save(user);
+                String otpMessage="OTP:"+randomCode;
+                String Url_str = "https://www.tunisiesms.tn/client/Api/Api.aspx?fct=sms&key=MYKEY&mobile=216XXXXXXXX&sms=Hello+World&sender=YYYYYYYY";
+                Url_str = Url_str.replace("MYKEY", myKey);
+                Url_str = Url_str.replace("216XXXXXXXX", "216"+telephone);
+                Url_str = Url_str.replace("Hello+World", otpMessage);
+                Url_str = Url_str.replace("YYYYYYYY", mySender);
+                URL myURL = new URL(Url_str);
+                URLConnection myURLConnection = myURL.openConnection();
+                myURLConnection.connect();
+                response=new PasswordResetResponse(OtpStatus.DELIVERED,Url_str);
+
+            }
+            else{
+                return new PasswordResetResponse(OtpStatus.FAILED,"Check your phone number");
+            }
 
         } catch (Exception exp) {
             response=new PasswordResetResponse(OtpStatus.FAILED,exp.getMessage());}
@@ -154,26 +172,6 @@ public class Userservice implements IUserservice {
 
     }
 
-   /* @Override
-    public PasswordResetResponse sendOTPForPasswordResest(String phone) {
-        PasswordResetResponse response=null;
-try {
-        PhoneNumber reciever=new PhoneNumber(phone);
-        PhoneNumber sender=new PhoneNumber(twilioConfig.getTrialNumber());
-        String randomCode = RandomStringUtils.random(6, true, true);
-        String otpMessage="Dear user, your OTP is "+randomCode+", use this passcode to resset your password";
-        Message.creator(reciever,sender,otpMessage).create();
-   /* User user = userRepository.existsByPhone(phone);
-    System.out.println(user);
-    user.setVerify(randomCode);
-    userRepository.save(user);*/
 
-   /* response=new PasswordResetResponse(OtpStatus.DELIVERED,otpMessage);}
-catch (Exception exp)
-{
-    response=new PasswordResetResponse(OtpStatus.FAILED,exp.getMessage());}
-        return response;
-
-    }*/
 
 }

@@ -15,15 +15,15 @@ public interface UserRepository extends MongoRepository<User, String> {
   Boolean existsByUsername(String username);
 
   Boolean existsByEmail(String email);
-  User existsByPhone(String phone);
 
-
+User findByTelephone(String telephone);
   @Query(value="{'roles' : ?0}")
   List<User> findByRoleNot(String role);
   @Query(value="{'admin' : ?0}")
   List<User> findByAdmin(String admin);
   @Query(value = "{'email' : ?0}")
   User getUserByUsername(String username);
+
   @Query(value = "{'verify' : ?0}")
   User getUserCD(String code);
 
