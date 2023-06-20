@@ -95,13 +95,19 @@ public class AuthController implements DisposableBean, InitializingBean {
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpSession session) {
 
-
+		User u = userRepository.findByEmail(loginRequest.getEmail()).get();
+		if(u==null){
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid email");
+		}else if (u.getVerificationCode()!=null){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Verify your account");
+		}
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
-
+		String ipAddress = getIpAddress();
+		System.out.println(ipAddress);
 		String email = loginRequest.getEmail();
 		Integer numSessions = sessionCountMap.get(email);
 		if (numSessions == null) {
@@ -128,6 +134,17 @@ public class AuthController implements DisposableBean, InitializingBean {
 				userDetails.getEmail(),
 				roles,
 				userLocation));
+
+	}
+	private String getIpAddress() {
+		try {
+			InetAddress inetAddress = InetAddress.getLocalHost();
+			System.out.println("******"+inetAddress.getHostName());
+			return inetAddress.getHostAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return null;
+		}
 
 	}
 	/*@Autowired
