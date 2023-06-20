@@ -38,10 +38,10 @@ public class User {
   private String password;
   private String Telephone;
   private String Genre;
-  private String Avatar;
   private String verificationCode;
   private String verify;
   private boolean enabled;
+
 
 
   @DBRef
