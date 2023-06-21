@@ -1,9 +1,12 @@
 package com.stage.digibackend.services;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
 import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.dto.PasswordResetResponse;
 
-import java.util.List;
+import javax.mail.MessagingException;
 
 public interface IUserservice {
     String addUser(User user);
@@ -13,8 +16,10 @@ public interface IUserservice {
     User updateUser(String userId,User userRequest);
     String deleteUser(String userId);
     List<User> ListAdmin();
+
+    List<User> ListAllClient() ;
     List<User> ListClient(String admin);
-    void resetPassword(String email);
+    void resetPassword(String email) throws MessagingException, UnsupportedEncodingException;
     String verifiePwd(String code, String pwd);
     //reser password with phone number
     PasswordResetResponse sendOTPForPasswordResest(String phone);

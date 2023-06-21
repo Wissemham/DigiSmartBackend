@@ -12,6 +12,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
@@ -103,7 +104,13 @@ public class Userservice implements IUserservice {
 
     @Override
     public List<User> ListAdmin() {
-        return userRepository.findByRoleNot("6489c4d71478ef0f49b46b90");
+        return   userRepository.findByRoleNot("6489c4d71478ef0f49b46b90");
+    }
+
+
+    @Override
+    public List<User> ListAllClient() {
+        return userRepository.findByRoleNot("648a2d798fce3961ef16dc4e");
     }
 
     @Override
@@ -113,11 +120,36 @@ public class Userservice implements IUserservice {
 
 
     @Override
-    public void resetPassword(String email) {
+    public void resetPassword(String email) throws MessagingException, UnsupportedEncodingException {
         User user = userRepository.getUserByUsername(email);
         String randomCode = RandomStringUtils.random(6, true, true);
         user.setVerify(randomCode);
         userRepository.save(user);
+        String toAddress = "yacinbnsalh@gmail.com";
+        String fromAddress = "aladin.hammouda@esprit.tn";
+        String senderName = "Digi-Smart-Solution";
+        String subject = "Your verify code:";
+        String content = "Dear [[name]],<br>"
+                + "This your verify password code:<br>"
+                + randomCode +"<br>"
+                + "Thank you,<br>"
+                + "Digi-Smart-Solution.";
+        System.out.println("send");
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(fromAddress, senderName);
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+
+        content = content.replace("[[name]]", user.getUsername());
+      //  String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
+
+      //  content = content.replace("[[URL]]", verifyURL);
+
+        helper.setText(content, true);
+
+        mailSender.send(message);
         //sendSms(randomCode);
 
     }

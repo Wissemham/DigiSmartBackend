@@ -1,6 +1,8 @@
 package com.stage.digibackend.security.jwt;
 
 import com.stage.digibackend.security.services.UserDetailsServiceImpl;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername1(username);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
             userDetails.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -56,5 +59,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     return null;
+  }
+
+  public static String extractEmailFromJwt(String jwt) {
+    Claims claims = Jwts.parser().setSigningKey("digiSecretKey").parseClaimsJws(jwt).getBody();
+    return claims.get("email", String.class);
   }
 }

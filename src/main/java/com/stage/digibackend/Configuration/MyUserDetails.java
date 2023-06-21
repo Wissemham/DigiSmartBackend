@@ -18,6 +18,8 @@ public class MyUserDetails implements UserDetails {
 
     private User user;
 
+
+
     public MyUserDetails(User user) {
         this.user = user;
     }
@@ -37,6 +39,7 @@ public class MyUserDetails implements UserDetails {
     public String getUsername() {
         return null;
     }
+
 
     @Override
     public boolean isAccountNonExpired() {

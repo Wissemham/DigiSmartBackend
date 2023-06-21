@@ -36,11 +36,16 @@ public class User {
   @NotBlank
   @Size(max = 120)
   private String password;
+
   private String telephone;
+  private String Genre;
+  private String Adresse;
 
   private String verificationCode;
   private String verify;
   private boolean enabled;
+
+
 
   @DBRef
   private Set<Role> roles = new HashSet<>();
@@ -56,6 +61,8 @@ public class User {
     this.email = email;
     this.password = password;
   }
+
+
 
   public String getId() {
     return id;
