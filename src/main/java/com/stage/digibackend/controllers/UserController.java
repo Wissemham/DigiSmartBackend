@@ -41,6 +41,7 @@ import com.stage.digibackend.repository.RoleRepository;
 import com.stage.digibackend.repository.UserRepository;
 import com.stage.digibackend.services.IUserservice;
 import com.stage.digibackend.services.Userservice;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("/users")
@@ -227,6 +228,17 @@ PasswordResetResponse sendSms(@PathVariable String phone){
         System.out.println("registre");
         userservice.sendVerificationEmail(user, siteURL);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+
+
+    @GetMapping("/verify/{code}")
+    public RedirectView verifyUser(@PathVariable("code") String code) {
+        if (userservice.verify(code)) {
+            return new RedirectView("http://localhost:4200/login");
+        } else {
+            return new RedirectView("http://localhost:4200/forbidden");
+        }
     }
 
 

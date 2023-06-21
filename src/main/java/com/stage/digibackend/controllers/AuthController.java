@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.mail.MessagingException;
+import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -128,10 +129,20 @@ public class AuthController implements DisposableBean, InitializingBean {
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
+		String xForwardedForHeader = request.getHeader("X-FORWARDED-FOR");
+		System.out.println(xForwardedForHeader);
+		Map<String, String> result = new HashMap<>();
 
+		Enumeration headerNames = request.getHeaderNames();
+		while (headerNames.hasMoreElements()) {
+			String headerKey = (String) headerNames.nextElement();
+			String headerValue = String.valueOf(request.getHeaderNames());
+			System.out.println(headerKey+" : "+headerValue);
+		}
 		//String userIpAddress = getUserIpAddress(loginRequest.getEmail());
 		String userLocation = getUserLocation(request);
 		System.out.println("/"+userLocation);
+
 		return ResponseEntity.ok(new JwtResponse(jwt,
 				userDetails.getId(),
 				userDetails.getUsername(),

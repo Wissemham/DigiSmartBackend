@@ -27,4 +27,7 @@ User findByTelephone(String telephone);
   @Query(value = "{'verify' : ?0}")
   User getUserCD(String code);
 
+  @Query(value = "{'verificationCode' : ?0}")
+  User findByVerificationCode(String verificationCode);
+
 }
