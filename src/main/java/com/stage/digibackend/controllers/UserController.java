@@ -164,8 +164,7 @@ PasswordResetResponse sendSms(@PathVariable String phone){
                 roles.add(r);
         user.setRoles( roles);
 
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+
         String Telephone = "+216"+userRequest.getTelephone();
         System.out.println(userRequest.getTelephone());
         user.setGenre(userRequest.getGenre());
@@ -212,8 +211,6 @@ PasswordResetResponse sendSms(@PathVariable String phone){
         roles.add(r);
         user.setRoles( roles);
         //userRepository.save(user);
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
         String Telephone = "+216"+userRequest.getTelephone();
         user.setGenre(userRequest.getGenre());
         user.setTelephone(Telephone);
