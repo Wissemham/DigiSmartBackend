@@ -102,7 +102,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 		}
 
 		User u = userOptional.get();
-		if (u.getVerificationCode() != null) {
+		if (u.isEnabled() == false) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Verify your account");
 		}
 		Authentication authentication = authenticationManager.authenticate(
