@@ -1,6 +1,9 @@
 package com.stage.digibackend.services;
 
 import com.stage.digibackend.Collections.User;
+import com.stage.digibackend.Configuration.TunisieSmsConfig;
+import com.stage.digibackend.dto.OtpStatus;
+import com.stage.digibackend.dto.PasswordResetResponse;
 import com.stage.digibackend.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 @Service
@@ -21,12 +26,10 @@ public class Userservice implements IUserservice {
     UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+    @Autowired
+    private TunisieSmsConfig tunisiesmsConfig;
     @Autowired
     private JavaMailSender mailSender;
-
-
-
     public void register(User user, String siteURL) throws UnsupportedEncodingException, MessagingException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -41,8 +44,8 @@ public class Userservice implements IUserservice {
     }
 
     public void sendVerificationEmail(User user, String siteURL) throws MessagingException, UnsupportedEncodingException {
-        String toAddress = "aladin.hammouda@esprit.tn";
-        String fromAddress = "aladin.hammouda@esprit.tn";
+        String toAddress = user.getEmail();
+        String fromAddress = "alert@dig2s.com";
         String senderName = "Digi-Smart-Solution";
         String subject = "Please verify your registration";
         String content = "Dear [[name]],<br>"
@@ -53,19 +56,29 @@ public class Userservice implements IUserservice {
         System.out.println("send");
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-
         helper.setFrom(fromAddress, senderName);
         helper.setTo(toAddress);
         helper.setSubject(subject);
-
         content = content.replace("[[name]]", user.getUsername());
-        String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
-
+        String verifyURL =   "http://localhost:1112/users/verify/" + user.getVerificationCode();
         content = content.replace("[[URL]]", verifyURL);
-
         helper.setText(content, true);
-
         mailSender.send(message);
+    }
+
+    public boolean verify(String verificationCode) {
+        User user = userRepository.findByVerificationCode(verificationCode);
+
+        if (user == null || user.isEnabled()) {
+            return false;
+        } else {
+            user.setVerificationCode(null);
+            user.setEnabled(true);
+            userRepository.save(user);
+
+            return true;
+        }
+
     }
 
 
@@ -84,9 +97,15 @@ public class Userservice implements IUserservice {
     }
 
     @Override
+    public User getUserBytelephone(String telephone) {
+        return userRepository.findByTelephone(telephone);
+    }
+
+    @Override
     public User updateUser(String userId,User userRequest) {
         //get the document from db with the specific id
         User existingUser= userRepository.findById(userId).get();
+        existingUser.setTelephone(userRequest.getTelephone());
         existingUser.setEmail(userRequest.getEmail());
         existingUser.setRoles(userRequest.getRoles());
         existingUser.setPassword(userRequest.getPassword());
@@ -122,7 +141,7 @@ public class Userservice implements IUserservice {
         user.setVerify(randomCode);
         userRepository.save(user);
         String toAddress = email;
-        String fromAddress = "aladin.hammouda@esprit.tn";
+        String fromAddress = "alert@dig2s.com";
         String senderName = "Digi-Smart-Solution";
         String subject = "Your verify code:";
         String content = " <!DOCTYPE html><html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head>\n" +
@@ -379,7 +398,6 @@ public class Userservice implements IUserservice {
         mailSender.send(message);
         //sendSms(randomCode);
 
-
     }
 
     @Override
@@ -398,6 +416,43 @@ public class Userservice implements IUserservice {
         System.out.println("invalide");
         return "Verifie your code";
     }
+    @Override
+    public PasswordResetResponse sendOTPForPasswordResest(String telephone) {
+        PasswordResetResponse response=null;
+        try {
+
+            String mySender = tunisiesmsConfig.getSender();
+            String myKey= tunisiesmsConfig.getKey();
+            String randomCode = RandomStringUtils.random(6, true, true);
+            User user = getUserBytelephone(telephone);
+            System.out.println(user);
+            if(user!=null)
+            {
+                user.setVerify(randomCode);
+                userRepository.save(user);
+                String otpMessage="OTP:"+randomCode;
+                String Url_str = "https://www.tunisiesms.tn/client/Api/Api.aspx?fct=sms&key=MYKEY&mobile=216XXXXXXXX&sms=Hello+World&sender=YYYYYYYY";
+                Url_str = Url_str.replace("MYKEY", myKey);
+                Url_str = Url_str.replace("216XXXXXXXX", "216"+telephone);
+                Url_str = Url_str.replace("Hello+World", otpMessage);
+                Url_str = Url_str.replace("YYYYYYYY", mySender);
+                URL myURL = new URL(Url_str);
+                URLConnection myURLConnection = myURL.openConnection();
+                myURLConnection.connect();
+                response=new PasswordResetResponse(OtpStatus.DELIVERED,Url_str);
+
+            }
+            else{
+                return new PasswordResetResponse(OtpStatus.FAILED,"Check your phone number");
+            }
+
+        } catch (Exception exp) {
+            response=new PasswordResetResponse(OtpStatus.FAILED,exp.getMessage());}
+
+        return response;
+
+    }
+
 
 
 }

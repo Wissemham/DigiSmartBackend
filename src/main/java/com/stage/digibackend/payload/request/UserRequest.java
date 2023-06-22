@@ -21,6 +21,23 @@ public class UserRequest {
     @Size(min = 6, max = 40)
     private String password;
 
+    @NotBlank
+    private String Telephone;
+    @NotBlank
+    private String Genre;
+    private String Adresse;
+
+    public String getAdresse(){return this.Adresse;}
+
+    public void setAdresse(String Adresse){this.Adresse = Adresse;}
+
+    public String getTelephone(){
+        return this.Telephone;
+    }
+    public void setTelephone(String Telephone){this.Telephone = Telephone;}
+    public String getGenre(){return this.Genre;}
+    public  void setGenre(String Genre){this.Genre=Genre;}
+
     public String getUsername() {
         return username;
     }

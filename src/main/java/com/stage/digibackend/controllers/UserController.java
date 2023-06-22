@@ -2,6 +2,7 @@ package com.stage.digibackend.controllers;
 
 import java.io.UnsupportedEncodingException;
 import com.stage.digibackend.Collections.User;
+import com.stage.digibackend.dto.PasswordResetResponse;
 import com.stage.digibackend.services.IUserservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,6 +41,7 @@ import com.stage.digibackend.repository.RoleRepository;
 import com.stage.digibackend.repository.UserRepository;
 import com.stage.digibackend.services.IUserservice;
 import com.stage.digibackend.services.Userservice;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("/users")
@@ -49,7 +51,6 @@ public class UserController {
     @Autowired
     IUserservice iUserService;
     //Add a user
-
     @PostMapping("/adduser")
     public String addUser(@RequestBody User user)
     {
@@ -112,7 +113,11 @@ public class UserController {
     String verifiePwd(@PathVariable String code,@PathVariable String pwd){
         return iUserService.verifiePwd(code,pwd);
     }
-
+//reset password with sms
+@PutMapping("/sendOtp/{phone}")
+PasswordResetResponse sendSms(@PathVariable String phone){
+   return iUserService.sendOTPForPasswordResest(phone);
+}
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -131,23 +136,23 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     @PostMapping("/AddAdmin")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRequest signUpRequest, String siteURL) throws MessagingException, UnsupportedEncodingException {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRequest userRequest, String siteURL) throws MessagingException, UnsupportedEncodingException {
+        if (userRepository.existsByUsername(userRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+        User user = new User(userRequest.getUsername(),
+                userRequest.getEmail(),
+                encoder.encode(userRequest.getPassword()));
 
 
         Set<Role> roles = new HashSet<>();
@@ -158,10 +163,14 @@ public class UserController {
 
                 roles.add(r);
         user.setRoles( roles);
-        //userRepository.save(user);
+
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-
+        String Telephone = "+216"+userRequest.getTelephone();
+        System.out.println(userRequest.getTelephone());
+        user.setGenre(userRequest.getGenre());
+        user.setTelephone(Telephone);
+        user.setAdresse(userRequest.getAdresse());
         String randomCode = RandomStringUtils.random(64, true, true);
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
@@ -170,28 +179,28 @@ public class UserController {
 
 
         System.out.println("registre");
-        userservice.sendVerificationEmail(user, siteURL);
+        //userservice.sendVerificationEmail(user, siteURL);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
     @PostMapping("/AddClient/{id}")
-    public ResponseEntity<?> registerClient(@Valid @RequestBody SignupRequest signUpRequest, String siteURL, @PathVariable("id") String idUser) throws MessagingException, UnsupportedEncodingException {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+    public ResponseEntity<?> registerClient(@Valid @RequestBody UserRequest userRequest, String siteURL, @PathVariable("id") String idUser) throws MessagingException, UnsupportedEncodingException {
+        if (userRepository.existsByUsername(userRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+        User user = new User(userRequest.getUsername(),
+                userRequest.getEmail(),
+                encoder.encode(userRequest.getPassword()));
 
 
         Set<Role> roles = new HashSet<>();
@@ -205,7 +214,10 @@ public class UserController {
         //userRepository.save(user);
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-
+        String Telephone = "+216"+userRequest.getTelephone();
+        user.setGenre(userRequest.getGenre());
+        user.setTelephone(Telephone);
+        user.setAdresse(userRequest.getAdresse());
         String randomCode = RandomStringUtils.random(64, true, true);
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
@@ -216,6 +228,17 @@ public class UserController {
         System.out.println("registre");
         userservice.sendVerificationEmail(user, siteURL);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+
+
+    @GetMapping("/verify/{code}")
+    public RedirectView verifyUser(@PathVariable("code") String code) {
+        if (userservice.verify(code)) {
+            return new RedirectView("http://localhost:4200/login");
+        } else {
+            return new RedirectView("http://localhost:4200/forbidden");
+        }
     }
 
 

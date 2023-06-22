@@ -36,12 +36,15 @@ public class User {
   @NotBlank
   @Size(max = 120)
   private String password;
-  private String Telephone;
+
+  private String telephone;
   private String Genre;
-  private String Avatar;
+  private String Adresse;
+
   private String verificationCode;
   private String verify;
   private boolean enabled;
+
 
 
   @DBRef
