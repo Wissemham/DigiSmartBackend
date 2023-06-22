@@ -83,8 +83,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 	private JavaMailSender mailSender;
 	@Autowired
 	private Userservice userservice;
-	@Autowired
-	private HttpServletRequest request;
+
 
 
 	private  TokenService tokenService;
@@ -129,26 +128,21 @@ public class AuthController implements DisposableBean, InitializingBean {
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
-		String xForwardedForHeader = request.getHeader("X-FORWARDED-FOR");
-		System.out.println(xForwardedForHeader);
+		//String xForwardedForHeader = request.getHeader("X-FORWARDED-FOR");
+		//System.out.println(xForwardedForHeader);
 		Map<String, String> result = new HashMap<>();
 
-		Enumeration headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String headerKey = (String) headerNames.nextElement();
-			String headerValue = String.valueOf(request.getHeaderNames());
-			System.out.println(headerKey+" : "+headerValue);
-		}
+		//Enumeration headerNames = request.getHeaderNames();
+
 		//String userIpAddress = getUserIpAddress(loginRequest.getEmail());
-		String userLocation = getUserLocation(request);
-		System.out.println("/"+userLocation);
+		//String userLocation = getUserLocation(request);
+		//System.out.println("/"+userLocation);
 
 		return ResponseEntity.ok(new JwtResponse(jwt,
 				userDetails.getId(),
 				userDetails.getUsername(),
 				userDetails.getEmail(),
-				roles,
-				userLocation));
+				roles));
 
 	}
 	private String getIpAddress() {
@@ -253,8 +247,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 		User admin = userRepository.findById(idUser).get();
 		user.setRoles(roles);
 		//userRepository.save(user);
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
-		user.setPassword(encodedPassword);
+
 
 		String randomCode = RandomStringUtils.random(64, true, true);
 		user.setVerificationCode(randomCode);
@@ -356,17 +349,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 
 		return userLocation;
 	}*/
-	private String getUserIpAddress(String userEmail) {
-		// Retrieve the user's IP address from the request headers based on the provided email
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
-			UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-			if (userDetails.getEmail().equals(userEmail)) {
-				return request.getRemoteAddr();
-			}
-		}
-		return null; // Handle the case when the user is not found or the email doesn't match
-	}
+
 
 	@Override
 	public void afterPropertiesSet() throws Exception {

@@ -110,7 +110,7 @@ public class UserController {
     }
 
     @GetMapping("/verifiePwd/{code}/{pwd}")
-    String verifiePwd(@PathVariable String code,@PathVariable String pwd){
+    ResponseEntity verifiePwd(@PathVariable String code,@PathVariable String pwd){
         return iUserService.verifiePwd(code,pwd);
     }
 //reset password with sms
@@ -164,8 +164,7 @@ PasswordResetResponse sendSms(@PathVariable String phone){
                 roles.add(r);
         user.setRoles( roles);
 
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+
         String Telephone = "+216"+userRequest.getTelephone();
         System.out.println(userRequest.getTelephone());
         user.setGenre(userRequest.getGenre());
@@ -212,8 +211,6 @@ PasswordResetResponse sendSms(@PathVariable String phone){
         roles.add(r);
         user.setRoles( roles);
         //userRepository.save(user);
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
         String Telephone = "+216"+userRequest.getTelephone();
         user.setGenre(userRequest.getGenre());
         user.setTelephone(Telephone);
@@ -240,6 +237,8 @@ PasswordResetResponse sendSms(@PathVariable String phone){
             return new RedirectView("http://localhost:4200/forbidden");
         }
     }
+
+
 
 
 
