@@ -139,7 +139,7 @@ public class Userservice implements IUserservice {
 
 
     @Override
-    public void resetPassword(String email) throws MessagingException, UnsupportedEncodingException {
+    public String resetPassword(String email) throws MessagingException, UnsupportedEncodingException {
         User user = userRepository.getUserByUsername(email);
         String randomCode = RandomStringUtils.random(6, true, true);
         user.setVerify(randomCode);
@@ -280,9 +280,9 @@ public class Userservice implements IUserservice {
                 "                      <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse:separate;line-height:100%;\">\n" +
                 "                        <tbody><tr>\n" +
                 "                          <td align=\"center\" bgcolor=\"#54595f\" role=\"presentation\" style=\"border:none;border-radius:30px;cursor:auto;mso-padding-alt:10px 25px;background:#54595f;\" valign=\"middle\">\n" +
-                "                            <a href=\"http://localhost:4200/newpassword/" +
-                "[[randomCode]]" +
-                "\" style=\"display: inline-block; background: #54595f; color: white; font-family: Nunito, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 30px; margin: 0; text-decoration: none; text-transform: none; padding: 10px 25px; mso-padding-alt: 0px; border-radius: 30px;\" target=\"_blank\"> Reset your password </a>\n" +
+                "                            <button disabled \"" +
+                "\" style=\"display: inline-block;  background: #54595f; color: white; font-family: Nunito, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 30px; margin: 0; text-decoration: none; text-transform: none; padding: 10px 25px; mso-padding-alt: 0px; border-radius: 30px;\" target=\"_blank\"> " +randomCode+
+                "</button>\n" +
                 "                          </td>\n" +
                 "                        </tr>\n" +
                 "                      </tbody></table>\n" +
@@ -401,7 +401,7 @@ public class Userservice implements IUserservice {
       //  helper.setText(contentt, true);
         mailSender.send(message);
         //sendSms(randomCode);
-
+    return randomCode;
     }
     private boolean isPasswordValid(String pwd) {
         // Vérifier si le mot de passe contient au moins une lettre minuscule et une lettre majuscule
@@ -410,13 +410,13 @@ public class Userservice implements IUserservice {
     @Override
     public ResponseEntity<String> verifiePwd(String code, String pwd) {
         User user = userRepository.getUserCD(code);
-
+        System.out.println(user.getEmail());
         if (user != null) {
             if (isPasswordValid(pwd)) {
                 user.setPassword(passwordEncoder.encode(pwd));
                 user.setVerify(null);
                 userRepository.save(user);
-
+                System.out.println("PASSWORD CHANGED");
                 return ResponseEntity.ok("Mot de passe changé");
             } else {
                 return ResponseEntity.ok("Le mot de passe doit contenir au moins une lettre minuscule et une lettre majuscule");

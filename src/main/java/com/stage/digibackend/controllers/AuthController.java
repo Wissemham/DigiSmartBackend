@@ -94,7 +94,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpSession session) {
-
+		System.out.println("LOGINNNNNNNN");
 		Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 
 		if (!userOptional.isPresent()) {
@@ -102,7 +102,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 		}
 
 		User u = userOptional.get();
-		if (u.getVerificationCode() != null) {
+		if (u.isEnabled() == true) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Verify your account");
 		}
 		Authentication authentication = authenticationManager.authenticate(
@@ -122,6 +122,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 		} else {
 			numSessions++;
 		}
+
 		sessionCountMap.put(email, numSessions);
 
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -137,7 +138,8 @@ public class AuthController implements DisposableBean, InitializingBean {
 		//String userIpAddress = getUserIpAddress(loginRequest.getEmail());
 		//String userLocation = getUserLocation(request);
 		//System.out.println("/"+userLocation);
-
+		System.out.println("user TO connect"+userDetails.getUsername()+
+				userDetails.getEmail());
 		return ResponseEntity.ok(new JwtResponse(jwt,
 				userDetails.getId(),
 				userDetails.getUsername(),

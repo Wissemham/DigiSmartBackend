@@ -20,8 +20,13 @@ public interface IUserservice {
 
     List<User> ListAllClient() ;
     List<User> ListClient(String admin);
-    void resetPassword(String email) throws MessagingException, UnsupportedEncodingException;
+
+
     ResponseEntity<String> verifiePwd(String code, String pwd);
+
+    String resetPassword(String email) throws MessagingException, UnsupportedEncodingException;
+
+
     //reser password with phone number
     PasswordResetResponse sendOTPForPasswordResest(String phone);
 }
