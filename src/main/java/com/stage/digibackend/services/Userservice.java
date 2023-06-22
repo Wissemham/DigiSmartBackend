@@ -7,6 +7,8 @@ import com.stage.digibackend.dto.PasswordResetResponse;
 import com.stage.digibackend.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +21,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class Userservice implements IUserservice {
@@ -399,23 +403,29 @@ public class Userservice implements IUserservice {
         //sendSms(randomCode);
 
     }
-
-    @Override
-    public String verifiePwd(String code, String pwd) {
-        //User user = userRepository.getUserByVerifiepwd(code);
-        //System.out.println(user.getIdUser());
-        User user = userRepository.getUserCD(code);
-        System.out.println(user);
-        if(user!=null){
-            user.setPassword(passwordEncoder.encode(pwd));
-            user.setVerify(null);
-            userRepository.save(user);
-            System.out.println("valide");
-            return "valide";
-        }
-        System.out.println("invalide");
-        return "Verifie your code";
+    private boolean isPasswordValid(String pwd) {
+        // Vérifier si le mot de passe contient au moins une lettre minuscule et une lettre majuscule
+        return pwd.matches("(?=.*[a-z])(?=.*[A-Z]).*");
     }
+    @Override
+    public ResponseEntity<String> verifiePwd(String code, String pwd) {
+        User user = userRepository.getUserCD(code);
+
+        if (user != null) {
+            if (isPasswordValid(pwd)) {
+                user.setPassword(passwordEncoder.encode(pwd));
+                user.setVerify(null);
+                userRepository.save(user);
+
+                return ResponseEntity.ok("Mot de passe changé");
+            } else {
+                return ResponseEntity.ok("Le mot de passe doit contenir au moins une lettre minuscule et une lettre majuscule");
+            }
+        }
+
+        return ResponseEntity.ok("Vérifiez votre code");
+    }
+
     @Override
     public PasswordResetResponse sendOTPForPasswordResest(String telephone) {
         PasswordResetResponse response=null;
