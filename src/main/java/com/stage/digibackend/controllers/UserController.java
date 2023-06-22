@@ -110,7 +110,7 @@ public class UserController {
     }
 
     @GetMapping("/verifiePwd/{code}/{pwd}")
-    String verifiePwd(@PathVariable String code,@PathVariable String pwd){
+    ResponseEntity verifiePwd(@PathVariable String code,@PathVariable String pwd){
         return iUserService.verifiePwd(code,pwd);
     }
 //reset password with sms
@@ -237,6 +237,8 @@ PasswordResetResponse sendSms(@PathVariable String phone){
             return new RedirectView("http://localhost:4200/forbidden");
         }
     }
+
+
 
 
 
