@@ -103,7 +103,7 @@ public class UserController {
 
     ///reset password
     @PutMapping("/resetPwd/{email}")
-    String verifypwd(@PathVariable String email) throws MessagingException, UnsupportedEncodingException {
+    PasswordResetResponse verifypwd(@PathVariable String email) throws MessagingException, UnsupportedEncodingException {
 
         System.out.println("sending mail : "+email);
         return iUserService.resetPassword(email);

@@ -24,7 +24,7 @@ public interface IUserservice {
 
     ResponseEntity<String> verifiePwd(String code, String pwd);
 
-    String resetPassword(String email) throws MessagingException, UnsupportedEncodingException;
+    PasswordResetResponse resetPassword(String email) throws MessagingException, UnsupportedEncodingException;
 
 
     //reser password with phone number

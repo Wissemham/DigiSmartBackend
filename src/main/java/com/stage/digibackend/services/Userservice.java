@@ -97,7 +97,9 @@ public class Userservice implements IUserservice {
     }
     @Override
     public User getUserById(String userId) {
-        return userRepository.findById(userId).get();
+        System.out.println("User ID"+userId);
+        System.out.println(userRepository.findById(userId).get());
+        return userRepository.findById(userId).get() ;
     }
 
     @Override
@@ -139,7 +141,7 @@ public class Userservice implements IUserservice {
 
 
     @Override
-    public String resetPassword(String email) throws MessagingException, UnsupportedEncodingException {
+    public PasswordResetResponse resetPassword(String email) throws MessagingException, UnsupportedEncodingException {
         User user = userRepository.getUserByUsername(email);
         String randomCode = RandomStringUtils.random(6, true, true);
         user.setVerify(randomCode);
@@ -401,7 +403,7 @@ public class Userservice implements IUserservice {
       //  helper.setText(contentt, true);
         mailSender.send(message);
         //sendSms(randomCode);
-    return randomCode;
+    return new PasswordResetResponse(OtpStatus.DELIVERED , randomCode);
     }
     private boolean isPasswordValid(String pwd) {
         // Vérifier si le mot de passe contient au moins une lettre minuscule et une lettre majuscule
@@ -448,8 +450,9 @@ public class Userservice implements IUserservice {
                 Url_str = Url_str.replace("YYYYYYYY", mySender);
                 URL myURL = new URL(Url_str);
                 URLConnection myURLConnection = myURL.openConnection();
-                myURLConnection.connect();
-                response=new PasswordResetResponse(OtpStatus.DELIVERED,Url_str);
+              myURLConnection.connect();
+                System.out.println("here we go");
+                response=new PasswordResetResponse(OtpStatus.DELIVERED,randomCode);
 
             }
             else{
