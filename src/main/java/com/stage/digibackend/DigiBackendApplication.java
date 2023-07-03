@@ -7,8 +7,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @SpringBootApplication
 @EnableMongoRepositories
 public class DigiBackendApplication {
-
-
     public static void main(String[] args) {
         SpringApplication.run(DigiBackendApplication.class, args);
     }
