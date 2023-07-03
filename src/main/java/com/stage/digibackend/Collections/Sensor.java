@@ -22,7 +22,9 @@ public class Sensor {
     @NotBlank
     private Double rangeMax ;
     private String image ;
+
     private EUnite unit ;
+    private String symboleUnite ;
 
 
 }
