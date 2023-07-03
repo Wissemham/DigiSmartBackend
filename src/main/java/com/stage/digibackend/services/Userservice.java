@@ -442,7 +442,7 @@ public class Userservice implements IUserservice {
             {
                 user.setVerify(randomCode);
                 userRepository.save(user);
-                String otpMessage="OTP:"+randomCode;
+                String otpMessage="Cher_utilisateur_utilisez_ce_code_pour_réinitialiser_votre_mot_de_passe:"+randomCode;
                 String Url_str = "https://www.tunisiesms.tn/client/Api/Api.aspx?fct=sms&key=MYKEY&mobile=216XXXXXXXX&sms=Hello+World&sender=YYYYYYYY";
                 Url_str = Url_str.replace("MYKEY", myKey);
                 Url_str = Url_str.replace("216XXXXXXXX", "216"+telephone);
