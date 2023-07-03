@@ -7,6 +7,7 @@ import com.stage.digibackend.dto.deviceResponse;
 import com.stage.digibackend.services.IDeviceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,8 @@ import java.util.zip.DataFormatException;
 public class DeviceController {
     @Autowired
     IDeviceService ideviceService;
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+
     @PostMapping("/addDevice")
     public String addDevice(@RequestBody Device device)
     {
@@ -31,19 +34,22 @@ public class DeviceController {
     {
         return ideviceService.getDeviceById(deviceId);
     }
-
     @GetMapping("getDeviceMac/{macadd}")
     public Device getDeviceByMac(@PathVariable String macadd)
     {
         return ideviceService.getDeviceByMacAdd(macadd);
     }
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
     @PutMapping("/updateDevice/{deviceId}")
     public deviceResponse updateDevice(@PathVariable String deviceId,@RequestBody Device device){return ideviceService.updateDevice(deviceId,device);}
-@DeleteMapping("/deleteDevice/{deviceId}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+
+    @DeleteMapping("/deleteDevice/{deviceId}")
     public String deleteDevice(@PathVariable String deviceId)
 {
     return ideviceService.deleteDevice(deviceId);
 }
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
 
     @PutMapping("/affectToAdmin/{deviceId}")
     public String affectToAdmin(@PathVariable String deviceId, @RequestBody String adminId) {
