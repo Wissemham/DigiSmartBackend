@@ -1,5 +1,6 @@
 package com.stage.digibackend.services;
 import com.stage.digibackend.Collections.Device;
+import com.stage.digibackend.Collections.Sensor;
 import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.dto.OtpStatus;
 import com.stage.digibackend.dto.deviceResponse;
@@ -14,6 +15,8 @@ import javax.mail.MessagingException;
 
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 @Service
 public class DeviceService implements IDeviceService {
@@ -21,6 +24,8 @@ public class DeviceService implements IDeviceService {
     DeviceRepository deviceRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    SensorService sensorService;
     @Autowired
     private JavaMailSender mailSender;
     @Override
@@ -347,4 +352,23 @@ public class DeviceService implements IDeviceService {
         }
 
     }
+
+    @Override
+    public List<Sensor> getSensorsList(String deviceId) {
+        Device existingDevice = deviceRepository.findById(deviceId).get();
+        if (existingDevice == null) {
+            System.out.println("Device not found!");
+            return Collections.emptyList();
+        }
+        List<String> sensorIds = existingDevice.getSensorList();
+        List<Sensor> sensors = new ArrayList<>();
+        for (String sensorId : sensorIds) {
+            Sensor sensor = sensorService.getSensor(sensorId);
+            if (sensor != null) {
+                sensors.add(sensor);
+            }
+        }
+        return sensors;
+    }
+
 }
