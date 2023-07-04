@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.zip.DataFormatException;
 
 @RestController
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/devices")
 public class DeviceController {
     @Autowired
