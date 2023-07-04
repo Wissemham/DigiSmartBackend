@@ -95,8 +95,9 @@ public class AuthController implements DisposableBean, InitializingBean {
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpSession session) {
 		System.out.println("LOGINNNNNNNN");
-		Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 
+		Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+		System.out.println(userOptional);
 		if (!userOptional.isPresent()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid email");
 		}
