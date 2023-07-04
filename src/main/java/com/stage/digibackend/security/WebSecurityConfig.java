@@ -76,10 +76,11 @@ public class WebSecurityConfig {
     http.cors().and().csrf().disable()
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+
+
+
         .authorizeRequests().antMatchers("/api/auth/**","/addRole/**","/users/**","/resetPwd/**",
 					"/users/listAllClient","/send-email","verify/**","/sensor/**","/devices/**").permitAll()
-
-
 
 
 
