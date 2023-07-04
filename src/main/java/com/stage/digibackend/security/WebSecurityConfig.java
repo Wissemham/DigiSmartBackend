@@ -81,6 +81,8 @@ public class WebSecurityConfig {
 
 
 
+
+
         .anyRequest().authenticated();
     //http.sessionManagement().maximumSessions(2).maxSessionsPreventsLogin(false).expiredUrl("/session-expired").and();
     http.authenticationProvider(authenticationProvider());
