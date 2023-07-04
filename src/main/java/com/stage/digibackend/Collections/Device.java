@@ -11,14 +11,12 @@ import java.util.List;
 @Data
 @Builder
 public class Device {
-
     @Id
     private String deviceId ;
     @NotBlank
     private String macAdress ;
     @NotBlank
     private String Description ;
-    @DBRef
     private List<String> sensorList ;
     private Boolean active;
     private String idAdmin;
