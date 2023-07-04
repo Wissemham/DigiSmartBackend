@@ -17,9 +17,8 @@ public class Sensor {
     private String sensorId ;
     @NotBlank
     private String sensorName ;
-    @NotBlank
     private Double rangeMin ;
-    @NotBlank
+
     private Double rangeMax ;
     private String image ;
 
