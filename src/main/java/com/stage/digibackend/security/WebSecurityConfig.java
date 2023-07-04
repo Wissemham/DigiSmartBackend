@@ -78,8 +78,14 @@ public class WebSecurityConfig {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
 
+
         .authorizeRequests().antMatchers("/api/auth/**","/addRole/**","/users/**","/resetPwd/**",
 					"/users/listAllClient","/send-email","verify/**","/sensor/**","/devices/**").permitAll()
+
+
+
+
+
 
 
 
