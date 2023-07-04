@@ -34,17 +34,23 @@ return iSensorService.updateSensor(sensor,idSensor);
 return iSensorService.deleteSensor(sensorId);
     }
     @GetMapping("/getSensorById/{sensorId}")
-    String getSensor(@PathVariable String sensorId)
+    Sensor getSensor(@PathVariable String sensorId)
     {
-return iSensorService.getSensor(sensorId);
+        return iSensorService.getSensor(sensorId);
     }
     @GetMapping("/getAllSensorsById")
     String getAllSensors(@RequestBody List<String> sensorIds)
     {
-return iSensorService.getAllSensors(sensorIds);
+        return iSensorService.getAllSensors(sensorIds);
     }
     @GetMapping("/getAllSensors")
     List<Sensor> getAllSensors(){
-return iSensorService.getAllSensors();
+        return iSensorService.getAllSensors();
 }
+
+    @GetMapping("/getAllSensorsDevice/{d}")
+    List<String> getAllSensorsDevice(@PathVariable String d)
+    {
+        return iSensorService.getAllSensorsDevice(d);
+    }
 }

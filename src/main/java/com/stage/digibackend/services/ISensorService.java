@@ -10,7 +10,9 @@ public interface ISensorService {
     String addSensors(List<Sensor> sensorList);
     String updateSensor(Sensor sensor,String idSensor);
     String deleteSensor(String sensorId);
-    String getSensor(String sensorId);
+    Sensor getSensor(String sensorId);
     String getAllSensors( List<String> sensorIds);
 List<Sensor> getAllSensors();
+
+    List<String> getAllSensorsDevice(String d);
 }
