@@ -20,7 +20,11 @@ public class SensorService implements ISensorService {
         if (sensorRepository.findSensorBySensorName(sensor.getSensorName()) != null) {
             return "Sensor name already exists!";
         }
-        sensor.setSymboleUnite(sensor.getUnit().getSymbol());
+        if (sensor.getUnit() != null)
+        {
+            sensor.setSymboleUnite(sensor.getUnit().getSymbol());
+        }
+
         return "Sensor added successfully:\n" + sensorRepository.save(sensor);
     }
 
@@ -30,7 +34,11 @@ public class SensorService implements ISensorService {
             if (sensorRepository.findSensorBySensorName(sensor.getSensorName()) != null) {
                 return "The Sensor with name " + sensor.getSensorName() + " already exists!";
             }
-            sensor.setSymboleUnite(sensor.getUnit().getSymbol());
+            if (sensor.getUnit() != null)
+            {
+                sensor.setSymboleUnite(sensor.getUnit().getSymbol());
+            }
+
         }
         return "Sensors added successfully:\n" + sensorRepository.saveAll(sensorList);
     }
