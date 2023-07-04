@@ -1,5 +1,6 @@
 package com.stage.digibackend.services;
 
+import com.stage.digibackend.Collections.Device;
 import com.stage.digibackend.Collections.Sensor;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface ISensorService {
 List<Sensor> getAllSensors();
 
     List<String> getAllSensorsDevice(String d);
+
+    Device getDevice(String d);
 }

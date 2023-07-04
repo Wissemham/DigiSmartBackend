@@ -1,5 +1,6 @@
 package com.stage.digibackend.controllers;
 
+import com.stage.digibackend.Collections.Device;
 import com.stage.digibackend.Collections.Sensor;
 import com.stage.digibackend.services.ISensorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +53,11 @@ return iSensorService.deleteSensor(sensorId);
     List<String> getAllSensorsDevice(@PathVariable String d)
     {
         return iSensorService.getAllSensorsDevice(d);
+    }
+
+    @GetMapping("/getDevice/{d}")
+    public Device getDevice(String d) {
+
+        return iSensorService.getDevice(d) ;
     }
 }

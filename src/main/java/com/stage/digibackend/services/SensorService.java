@@ -7,7 +7,6 @@ import com.stage.digibackend.repository.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,13 +121,17 @@ public class SensorService implements ISensorService {
     @Override
     public List<String> getAllSensorsDevice(String d) {
         Device device = deviceRepository.findById(d).get() ;
-        List<String> sensorList = new ArrayList() ;
-        for(String sIds : device.getSensorList())
-        {
-            sensorList.add(sIds) ;
-        }
-        return sensorList ;
+
+        return device.getSensorList() ;
     }
+
+    @Override
+    public Device getDevice(String d) {
+        Device device = deviceRepository.findById(d).get() ;
+        return device ;
+    }
+
+
 
 
 }
