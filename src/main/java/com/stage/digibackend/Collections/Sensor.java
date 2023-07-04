@@ -18,7 +18,6 @@ public class Sensor {
     @NotBlank
     private String sensorName ;
     private Double rangeMin ;
-
     private Double rangeMax ;
     private String image ;
 

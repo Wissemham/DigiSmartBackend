@@ -1,13 +1,15 @@
 package com.stage.digibackend.services;
 
+import com.stage.digibackend.Collections.Device;
 import com.stage.digibackend.Collections.Sensor;
+import com.stage.digibackend.repository.DeviceRepository;
 import com.stage.digibackend.repository.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import com.stage.digibackend.Enumeration.EUnite ;
+
 @Service
 public class SensorService implements ISensorService {
 
@@ -38,7 +40,6 @@ public class SensorService implements ISensorService {
             {
                 sensor.setSymboleUnite(sensor.getUnit().getSymbol());
             }
-
         }
         return "Sensors added successfully:\n" + sensorRepository.saveAll(sensorList);
     }
@@ -68,9 +69,7 @@ public class SensorService implements ISensorService {
             existingSensor.setRangeMax(sensor.getRangeMax() );
         }
 
-        if (sensor.getImage() != existingSensor.getImage() && sensor.getImage() != null){
-            existingSensor.setImage(sensor.getImage() );
-        }
+
         if (sensor.getUnit() != existingSensor.getUnit() && sensor.getUnit() != null){
             existingSensor.setUnit(sensor.getUnit() );
             existingSensor.setSymboleUnite(sensor.getUnit().getSymbol());
@@ -89,12 +88,10 @@ public class SensorService implements ISensorService {
         }
 
         @Override
-        public String getSensor(String sensorId) {
-            Optional<Sensor> sensorOptional = sensorRepository.findById(sensorId);
-            if (sensorRepository.findById(sensorId) == null) {
-                return "Sensor does not exist!";
-            }
-            return "sensor deleted successfuly" ;
+        public Sensor getSensor(String sensorId) {
+            //Optional<Sensor> sensorOptional = sensorRepository.findById(sensorId);
+            return sensorRepository.findById(sensorId).get() ;
+
         }
 
 
@@ -118,7 +115,14 @@ public class SensorService implements ISensorService {
             List<Sensor> sensors = sensorRepository.findAll();
             return sensors;
         }
+
+    @Override
+    public List<String> getAllSensorsDevice(String d) {
+        return null;
     }
+
+
+}
 
 
 
