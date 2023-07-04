@@ -94,9 +94,10 @@ public class AuthController implements DisposableBean, InitializingBean {
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpSession session) {
-		System.out.println("LOGINNNNNNNN");
 
+		System.out.println(loginRequest.getEmail());
 		Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+
 		System.out.println(userOptional);
 		if (!userOptional.isPresent()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid email");
@@ -120,6 +121,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 			numSessions = 1;
 		} else if (numSessions >= 3) {
 			// Maximum of three sessions reached
+			System.out.println("Maximum number of sessions reached for this user");
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Maximum number of sessions reached for this user.");
 		} else {
 			numSessions++;
