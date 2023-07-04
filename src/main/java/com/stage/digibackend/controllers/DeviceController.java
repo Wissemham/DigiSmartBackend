@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
@@ -18,7 +20,7 @@ import java.util.zip.DataFormatException;
 public class DeviceController {
     @Autowired
     IDeviceService ideviceService;
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+  //  @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
 
     @PostMapping("/addDevice")
     public String addDevice(@RequestBody Device device)
@@ -39,20 +41,20 @@ public class DeviceController {
     {
         return ideviceService.getDeviceByMacAdd(macadd);
     }
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+   // @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
     @PutMapping("/updateDevice/{deviceId}")
     public deviceResponse updateDevice(@PathVariable String deviceId,@RequestBody Device device){return ideviceService.updateDevice(deviceId,device);}
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+   // @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
 
     @DeleteMapping("/deleteDevice/{deviceId}")
     public String deleteDevice(@PathVariable String deviceId)
 {
     return ideviceService.deleteDevice(deviceId);
 }
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+   // @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
 
     @PutMapping("/affectToAdmin/{deviceId}")
-    public String affectToAdmin(@PathVariable String deviceId, @RequestBody String adminId) {
+    public String affectToAdmin(@PathVariable String deviceId, @RequestBody String adminId) throws MessagingException, UnsupportedEncodingException {
         return ideviceService.affectDeviceToAdmin(deviceId,adminId);}
 
     }
