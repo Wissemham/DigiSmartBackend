@@ -59,6 +59,7 @@ public class DeviceService implements IDeviceService {
             existingDevice.setDescription(deviceRequest.getDescription());
             existingDevice.setActive(deviceRequest.getActive());
             existingDevice.setSensorList(deviceRequest.getSensorList());
+            existingDevice.setLocation(deviceRequest.getLocation());
             deviceRepository.save(existingDevice);
            response=new deviceResponse(OtpStatus.SUCCED,existingDevice) ;
         }

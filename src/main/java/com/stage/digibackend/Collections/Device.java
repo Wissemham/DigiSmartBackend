@@ -21,6 +21,7 @@ public class Device {
     private Boolean active;
     private String idAdmin;
     private String idClient;
+    private String location;
 
 
 }
