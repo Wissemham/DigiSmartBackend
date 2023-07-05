@@ -18,4 +18,7 @@ public interface IDeviceService {
     String deleteDevice(String deviceId);
     String affectDeviceToAdmin(String deviceId,String adminId) throws MessagingException, UnsupportedEncodingException;
 List<Sensor> getSensorsList(String deviceId);
+List<Device> getListDevice(String idAdmin);
+
+
 }

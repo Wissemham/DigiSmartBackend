@@ -18,6 +18,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class DeviceService implements IDeviceService {
     @Autowired
@@ -371,4 +373,28 @@ public class DeviceService implements IDeviceService {
         return sensors;
     }
 
+    @Override
+    public List<Device> getListDevice(String idAdmin) {
+        Optional<User> optionalUser = userRepository.findById(idAdmin);
+        if (!optionalUser.isPresent()) {
+            return Collections.emptyList();
+        }
+        User user = optionalUser.get();
+        System.out.println(user);
+
+        List<Device> devices = getAllDevices();
+        List<Device> userDevices = new ArrayList<>();
+        for (Device device : devices) {
+
+            if (device.getIdAdmin().equals(idAdmin)) {
+
+                System.out.println(device);
+                userDevices.add(device);
+            }
+        }
+        return userDevices;
+    }
+
+
 }
+
