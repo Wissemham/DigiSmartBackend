@@ -2,7 +2,6 @@ package com.stage.digibackend.services;
 
 import com.stage.digibackend.Collections.Device;
 import com.stage.digibackend.Collections.Sensor;
-import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.dto.deviceResponse;
 
 import javax.mail.MessagingException;
@@ -18,4 +17,6 @@ public interface IDeviceService {
     String deleteDevice(String deviceId);
     String affectDeviceToAdmin(String deviceId,String adminId) throws MessagingException, UnsupportedEncodingException;
 List<Sensor> getSensorsList(String deviceId);
+List<Device> getAdminDevices(String adminId);
+void setDeviceState(String deviceId);
 }

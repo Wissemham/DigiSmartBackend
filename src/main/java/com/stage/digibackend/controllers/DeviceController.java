@@ -62,4 +62,9 @@ public class DeviceController {
     List<Sensor> getAllSensors(@PathVariable String deviceId){
         return ideviceService.getSensorsList(deviceId);
     }
+
+    @GetMapping("/getAdminDevices/{adminId}")
+    List<Device> getAdminDevices(@PathVariable String adminId){
+        return ideviceService.getAdminDevices(adminId);
     }
+}
