@@ -11,8 +11,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
-
-
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -46,6 +44,7 @@ public class DeviceService implements IDeviceService {
 
     @Override
     public Device getDeviceById(String deviceId) {
+
         System.out.println("User ID"+deviceId);
         System.out.println(deviceRepository.findById(deviceId).get());
         return deviceRepository.findById(deviceId).get();
@@ -390,19 +389,17 @@ public class DeviceService implements IDeviceService {
         }
         User user = optionalUser.get();
         System.out.println(user);
-
         List<Device> devices = getAllDevices();
         List<Device> userDevices = new ArrayList<>();
         for (Device device : devices) {
-
-            if (device.getIdAdmin().equals(adminId)) {
-
+            if (device.getIdAdmin() != null && device.getIdAdmin().equals(adminId)) {
                 System.out.println(device);
                 userDevices.add(device);
             }
         }
         return userDevices;
     }
+
 
     @Override
     public List<Device> getClientDevices(String clientId) {

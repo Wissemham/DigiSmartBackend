@@ -69,6 +69,6 @@ public class DeviceController {
     }
     @GetMapping("/getClientDevices/{clientId}")
     List<Device> getClientDevices(@PathVariable String clientId){
-        return ideviceService.getAdminDevices(clientId);
+        return ideviceService.getClientDevices(clientId);
     }
 }
