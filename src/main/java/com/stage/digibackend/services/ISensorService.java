@@ -8,14 +8,13 @@ import java.util.List;
 public interface ISensorService {
 
     String addSensor(Sensor sensor);
-    String addSensors(List<Sensor> sensorList);
     String updateSensor(Sensor sensor,String idSensor);
     String deleteSensor(String sensorId);
     Sensor getSensor(String sensorId);
     String getAllSensors( List<String> sensorIds);
-List<Sensor> getAllSensors();
+    List<Sensor> getAllSensors();
+    List<Sensor> getAllSensorsSignal420();
 
-    List<String> getAllSensorsDevice(String d);
 
-    Device getDevice(String d);
+
 }

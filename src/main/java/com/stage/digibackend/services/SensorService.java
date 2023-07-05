@@ -26,24 +26,13 @@ public class SensorService implements ISensorService {
         {
             sensor.setSymboleUnite(sensor.getUnit().getSymbol());
         }
+        if(sensor.getSignal()==true ){
+            sensor.setA((sensor.getRangeMax()- sensor.getRangeMin())/16);
+            sensor.setB(sensor.getRangeMax()-(20* sensor.getA()));
+        }
 
         return "Sensor added successfully:\n" + sensorRepository.save(sensor);
     }
-
-    @Override
-    public String addSensors(List<Sensor> sensorList) {
-        for (Sensor sensor : sensorList) {
-            if (sensorRepository.findSensorBySensorName(sensor.getSensorName()) != null) {
-                return "The Sensor with name " + sensor.getSensorName() + " already exists!";
-            }
-            if (sensor.getUnit() != null)
-            {
-                sensor.setSymboleUnite(sensor.getUnit().getSymbol());
-            }
-        }
-        return "Sensors added successfully:\n" + sensorRepository.saveAll(sensorList);
-    }
-
 
     @Override
         public String updateSensor(Sensor sensor,String idSensor) {
@@ -75,6 +64,14 @@ public class SensorService implements ISensorService {
             existingSensor.setSymboleUnite(sensor.getUnit().getSymbol());
         }
 
+        if (sensor.getSignal() != existingSensor.getSignal() && sensor.getSignal()  != null){
+            existingSensor.setSignal(sensor.getSignal() );
+        }
+
+        if((existingSensor.getRangeMax() != null) && (existingSensor.getRangeMin()!= null)){
+            existingSensor.setA((sensor.getRangeMax()- sensor.getRangeMin())/16);
+            existingSensor.setB(sensor.getRangeMax()-(20* sensor.getA()));
+        }
         return "Sensor updated successfully:\n" + sensorRepository.save(existingSensor);
         }
 
@@ -116,22 +113,10 @@ public class SensorService implements ISensorService {
             return sensors;
         }
 
-        @Autowired
-        DeviceRepository deviceRepository ;
     @Override
-    public List<String> getAllSensorsDevice(String d) {
-        Device device = deviceRepository.findById(d).get() ;
-
-        return device.getSensorList() ;
+    public List<Sensor> getAllSensorsSignal420() {
+       return sensorRepository.findAllBySignalIsTrue();
     }
-
-    @Override
-    public Device getDevice(String d) {
-        Device device = deviceRepository.findById(d).get() ;
-        return device ;
-    }
-
-
 
 
 }

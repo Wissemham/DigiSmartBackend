@@ -21,21 +21,19 @@ public class SensorController {
     String addSensor(@RequestBody Sensor sensor){
 return iSensorService.addSensor(sensor);
     }
-    @PostMapping("/addSensors")
-    String addSensors(@RequestBody List<Sensor> sensorList){
-return iSensorService.addSensors(sensorList);
-    }
+
     @PutMapping("/updateSensor/{idSensor}")
     String updateSensor(@RequestBody Sensor sensor, @PathVariable String idSensor)
     {
-return iSensorService.updateSensor(sensor,idSensor);
+        return iSensorService.updateSensor(sensor,idSensor);
     }
+
     @DeleteMapping("/deleteSensor/{sensorId}")
     String deleteSensor(@PathVariable String sensorId){
 return iSensorService.deleteSensor(sensorId);
     }
-    @GetMapping("/getSensorById/{sensorId}")
 
+    @GetMapping("/getSensorById/{sensorId}")
     Sensor getSensor(@PathVariable String sensorId)
     {
         return iSensorService.getSensor(sensorId);
@@ -46,20 +44,15 @@ return iSensorService.deleteSensor(sensorId);
     {
         return iSensorService.getAllSensors(sensorIds);
     }
+
     @GetMapping("/getAllSensors")
     List<Sensor> getAllSensors(){
         return iSensorService.getAllSensors();
 }
 
-    @GetMapping("/getAllSensorsDevice/{d}")
-    List<String> getAllSensorsDevice(@PathVariable String d)
-    {
-        return iSensorService.getAllSensorsDevice(d);
+    @GetMapping("/getAllSensorsSignal420")
+    public List<Sensor> getAllSensorsSignal420() {
+        return iSensorService.getAllSensorsSignal420();
     }
 
-    @GetMapping("/getDevice/{d}")
-    public Device getDevice(String d) {
-
-        return iSensorService.getDevice(d) ;
-    }
 }
