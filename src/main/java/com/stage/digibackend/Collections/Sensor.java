@@ -24,5 +24,10 @@ public class Sensor {
     private EUnite unit ;
     private String symboleUnite ;
 
+    private Boolean signal ;
+    private Double a ;
+    private Double b ;
+
+
 
 }
