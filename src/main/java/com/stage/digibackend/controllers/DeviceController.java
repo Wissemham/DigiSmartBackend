@@ -67,4 +67,8 @@ public class DeviceController {
     List<Device> getAdminDevices(@PathVariable String adminId){
         return ideviceService.getAdminDevices(adminId);
     }
+    @GetMapping("/getClientDevices/{clientId}")
+    List<Device> getClientDevices(@PathVariable String clientId){
+        return ideviceService.getAdminDevices(clientId);
+    }
 }
