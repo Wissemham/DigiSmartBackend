@@ -24,4 +24,5 @@ public class Device {
     private String location;
     private String deviceCode;
 
+
 }
