@@ -2,6 +2,7 @@ package com.stage.digibackend.controllers;
 
 import com.stage.digibackend.Collections.Device;
 
+import com.stage.digibackend.Collections.Sensor;
 import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.dto.deviceResponse;
 import com.stage.digibackend.services.IDeviceService;
@@ -57,5 +58,17 @@ public class DeviceController {
     @PutMapping("/affectToAdmin/{deviceId}")
     public String affectToAdmin(@PathVariable String deviceId, @RequestBody String adminId) throws MessagingException, UnsupportedEncodingException {
         return ideviceService.affectDeviceToAdmin(deviceId,adminId);}
-
+    @GetMapping("/getSensorList/{deviceId}")
+    List<Sensor> getAllSensors(@PathVariable String deviceId){
+        return ideviceService.getSensorsList(deviceId);
     }
+
+    @GetMapping("/getAdminDevices/{adminId}")
+    List<Device> getAdminDevices(@PathVariable String adminId){
+        return ideviceService.getAdminDevices(adminId);
+    }
+    @GetMapping("/getClientDevices/{clientId}")
+    List<Device> getClientDevices(@PathVariable String clientId){
+        return ideviceService.getClientDevices(clientId);
+    }
+}

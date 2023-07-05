@@ -22,5 +22,6 @@ public class Device {
     private String idAdmin;
     private String idClient;
     private String location;
+    private String deviceCode;
 
 }

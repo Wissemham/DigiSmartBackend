@@ -1,5 +1,6 @@
 package com.stage.digibackend.services;
 import com.stage.digibackend.Collections.Device;
+import com.stage.digibackend.Collections.Sensor;
 import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.dto.OtpStatus;
 import com.stage.digibackend.dto.deviceResponse;
@@ -10,17 +11,21 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
-
-
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class DeviceService implements IDeviceService {
     @Autowired
     DeviceRepository deviceRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    SensorService sensorService;
     @Autowired
     private JavaMailSender mailSender;
     @Override
@@ -39,6 +44,7 @@ public class DeviceService implements IDeviceService {
 
     @Override
     public Device getDeviceById(String deviceId) {
+
         System.out.println("User ID"+deviceId);
         System.out.println(deviceRepository.findById(deviceId).get());
         return deviceRepository.findById(deviceId).get();
@@ -48,30 +54,39 @@ public class DeviceService implements IDeviceService {
     public Device getDeviceByMacAdd(String add_mac) {
         return deviceRepository.findBymacAdress(add_mac);
     }
-
+    @Override
+    public void setDeviceState(String deviceId) {
+        Device existingDevice = deviceRepository.findById(deviceId).get();
+        existingDevice.setActive(!existingDevice.getActive());
+        deviceRepository.save(existingDevice);
+        System.out.println( "State set to "+existingDevice.getActive());}
     @Override
     public deviceResponse updateDevice(String deviceId, Device deviceRequest) {
-        deviceResponse response=null;
-        //get the document from db with the specific id
-        Device existingDevice= deviceRepository.findById(deviceId).get();
-        if(existingDevice!=null)
-        {
-            existingDevice.setDescription(deviceRequest.getDescription());
-            existingDevice.setActive(deviceRequest.getActive());
-            if(deviceRequest.getSensorList() != null || deviceRequest.getSensorList().isEmpty() )
-            {
-                for(String s :deviceRequest.getSensorList() )
-                {
-                    existingDevice.getSensorList().add(s);
-                }
+        deviceResponse response = null;
+        Device existingDevice = deviceRepository.findById(deviceId).orElse(null);
+        if (existingDevice != null) {
+            if (deviceRequest.getDescription() != null) {
+                existingDevice.setDescription(deviceRequest.getDescription());
             }
-
-            existingDevice.setLocation(deviceRequest.getLocation());
+            if (deviceRequest.getSensorList() != null && !deviceRequest.getSensorList().isEmpty()) {
+                existingDevice.setSensorList(deviceRequest.getSensorList());
+            }
+            if (deviceRequest.getLocation() != null) {
+                existingDevice.setLocation(deviceRequest.getLocation());
+            }
+            if (deviceRequest.getMacAdress() != null) {
+                existingDevice.setMacAdress(deviceRequest.getMacAdress());
+            }
+            if (deviceRequest.getIdClient() != null) {
+                existingDevice.setIdClient(deviceRequest.getIdClient());
+            }
+            if (deviceRequest.getIdAdmin() != null) {
+                existingDevice.setIdAdmin(deviceRequest.getIdAdmin());
+            }
             deviceRepository.save(existingDevice);
-           response=new deviceResponse(OtpStatus.SUCCED,existingDevice) ;
-        }
-        else {
-            response=new deviceResponse(OtpStatus.FAILED,existingDevice) ;
+            response = new deviceResponse(OtpStatus.SUCCED, existingDevice);
+        } else {
+            response = new deviceResponse(OtpStatus.FAILED, existingDevice);
         }
         return response;
     }
@@ -347,4 +362,66 @@ public class DeviceService implements IDeviceService {
         }
 
     }
+
+    @Override
+    public List<Sensor> getSensorsList(String deviceId) {
+        Device existingDevice = deviceRepository.findById(deviceId).get();
+        if (existingDevice == null) {
+            System.out.println("Device not found!");
+            return Collections.emptyList();
+        }
+        List<String> sensorIds = existingDevice.getSensorList();
+        List<Sensor> sensors = new ArrayList<>();
+        for (String sensorId : sensorIds) {
+            Sensor sensor = sensorService.getSensor(sensorId);
+            if (sensor != null) {
+                sensors.add(sensor);
+            }
+        }
+        return sensors;
+    }
+
+    @Override
+    public List<Device> getAdminDevices(String adminId) {
+        Optional<User> optionalUser = userRepository.findById(adminId);
+        if (!optionalUser.isPresent()) {
+            return Collections.emptyList();
+        }
+        User user = optionalUser.get();
+        System.out.println(user);
+        List<Device> devices = getAllDevices();
+        List<Device> userDevices = new ArrayList<>();
+        for (Device device : devices) {
+            if (device.getIdAdmin() != null && device.getIdAdmin().equals(adminId)) {
+                System.out.println(device);
+                userDevices.add(device);
+            }
+        }
+        return userDevices;
+    }
+
+
+    @Override
+    public List<Device> getClientDevices(String clientId) {
+        Optional<User> optionalUser = userRepository.findById(clientId);
+        if (!optionalUser.isPresent()) {
+            return Collections.emptyList();
+        }
+        User user = optionalUser.get();
+        System.out.println(user);
+
+        List<Device> devices = getAllDevices();
+        List<Device> clientDevices = new ArrayList<>();
+        for (Device device : devices) {
+
+            if (device.getIdClient().equals(clientId)) {
+
+                System.out.println(device);
+                clientDevices.add(device);
+            }
+        }
+        return clientDevices;
+    }
+
+
 }
