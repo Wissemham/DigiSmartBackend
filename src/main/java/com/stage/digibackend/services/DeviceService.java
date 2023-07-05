@@ -404,6 +404,27 @@ public class DeviceService implements IDeviceService {
         return userDevices;
     }
 
+    @Override
+    public List<Device> getClientDevices(String clientId) {
+        Optional<User> optionalUser = userRepository.findById(clientId);
+        if (!optionalUser.isPresent()) {
+            return Collections.emptyList();
+        }
+        User user = optionalUser.get();
+        System.out.println(user);
+
+        List<Device> devices = getAllDevices();
+        List<Device> clientDevices = new ArrayList<>();
+        for (Device device : devices) {
+
+            if (device.getIdClient().equals(clientId)) {
+
+                System.out.println(device);
+                clientDevices.add(device);
+            }
+        }
+        return clientDevices;
+    }
 
 
 }
