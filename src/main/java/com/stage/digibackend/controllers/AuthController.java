@@ -39,17 +39,13 @@ import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
+
 import java.net.InetAddress;
-import java.net.URL;
+
 import java.net.UnknownHostException;
 import java.util.*;
-import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -137,11 +133,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 		//System.out.println(xForwardedForHeader);
 		Map<String, String> result = new HashMap<>();
 
-		//Enumeration headerNames = request.getHeaderNames();
 
-		//String userIpAddress = getUserIpAddress(loginRequest.getEmail());
-		//String userLocation = getUserLocation(request);
-		//System.out.println("/"+userLocation);
 		System.out.println("user TO connect"+userDetails.getUsername()+
 				userDetails.getEmail());
 		return ResponseEntity.ok(new JwtResponse(jwt,
@@ -162,46 +154,6 @@ public class AuthController implements DisposableBean, InitializingBean {
 		}
 
 	}
-	/*@Autowired
-	private PasswordEncoder passwordEncoder;
-
-
-		/*Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
-		Integer numBrowsers = (Integer) session.getAttribute(loginRequest.getEmail());
-		if (numBrowsers == null) {
-			numBrowsers = 1;
-		} else if (numBrowsers >= 3) {
-			// Maximum of three browsers reached
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Maximum number of browsers reached for this user.");
-		} else {
-			numBrowsers++;
-		}
-		session.setAttribute(loginRequest.getEmail(), numBrowsers);
-		System.out.println(numBrowsers);
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
-				.collect(Collectors.toList());
-		return ResponseEntity.ok(new JwtResponse(jwt,
-				userDetails.getId(),
-				userDetails.getUsername(),
-				userDetails.getEmail(),
-				roles));
-	}*/
-
-
-
-
-
-
-
-
-
-
 	@PostMapping("/signup/{id}")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,String siteURL,@PathVariable("id") String idUser) throws MessagingException, UnsupportedEncodingException {
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
@@ -260,8 +212,6 @@ public class AuthController implements DisposableBean, InitializingBean {
 		user.setEnabled(false);
 		user.setAdmin(admin);
 		userRepository.save(user);
-
-
 		System.out.println("registre");
 		userservice.sendVerificationEmail(user, siteURL);
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
@@ -304,63 +254,9 @@ public class AuthController implements DisposableBean, InitializingBean {
 				sessionCountMap.put(email, numSessions);
 			}
 		}
-
 	}
-	//private String getUserLocation(String userEmail) {
-
-	private String getUserLocation(HttpServletRequest request) {
-		String userIpAddress = request.getRemoteAddr();
-		String apiUrl = "http://ip-api.com/json/" + userIpAddress;
-		RestTemplate restTemplate = new RestTemplate();
-		String response = restTemplate.getForObject(apiUrl, String.class);
-		String userLocation = "Unknown";
-
-		try {
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
-			String city = (String) json.get("city");
-			String country = (String) json.get("country");
-
-			if (city != null && country != null) {
-				userLocation = city + ", " + country;
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		return userLocation;
-	}
-
-		// Retrieve the user's IP address based on the provided email
-		/*String userIpAddress = getUserIpAddress(userEmail);
-
-		// Make a REST API call to the IP-API service to get the location information
-		String apiUrl = "http://ip-api.com/json/" + userIpAddress;
-		RestTemplate restTemplate = new RestTemplate();
-		String response = restTemplate.getForObject(apiUrl, String.class);
-
-		String userLocation = "Unknown";
-		try {
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(response);
-			String city = (String) json.get("city");
-			String country = (String) json.get("country");
-
-			if (city != null && country != null) {
-				userLocation = city + ", " + country;
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		return userLocation;
-	}*/
-
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
 	}
-
-
 }
