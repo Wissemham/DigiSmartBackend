@@ -71,4 +71,6 @@ public class DeviceController {
     List<Device> getClientDevices(@PathVariable String clientId){
         return ideviceService.getClientDevices(clientId);
     }
+    @PutMapping("/setDeviceState/{deviceId}")
+    public String setDeviceState(@PathVariable String deviceId){return ideviceService.setDeviceState(deviceId);}
 }

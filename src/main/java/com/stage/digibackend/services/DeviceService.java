@@ -35,13 +35,10 @@ public class DeviceService implements IDeviceService {
     public String addDevice(Device device) {
 
         if(deviceRepository.findBymacAdress(device.getMacAdress())==null) {
-
             Device  d=deviceRepository.save(device);
             for (String s:d.getSensorList()){
                 dataSensor.affecteSensorDevice(s,d.getDeviceId());}
             return  d.toString();
-
-
         }
         return "Error a device exists with address mac";
     }
@@ -53,22 +50,40 @@ public class DeviceService implements IDeviceService {
 
     @Override
     public Device getDeviceById(String deviceId) {
-
-        System.out.println("User ID"+deviceId);
-        System.out.println(deviceRepository.findById(deviceId).get());
-        return deviceRepository.findById(deviceId).get();
+        Optional<Device> existingDeviceOptional = deviceRepository.findById(deviceId);
+        if (!existingDeviceOptional.isPresent()) {
+            System.out.println("Device not found!");
+            return null;
+        }
+        Device device = existingDeviceOptional.get();
+        if (!device.getActive()) {
+            System.out.println("Device state is false. Cannot retrieve device.");
+            return null;
+        }
+        System.out.println(device);
+        return device;
     }
+
 
     @Override
     public Device getDeviceByMacAdd(String add_mac) {
         return deviceRepository.findBymacAdress(add_mac);
     }
     @Override
-    public void setDeviceState(String deviceId) {
-        Device existingDevice = deviceRepository.findById(deviceId).get();
-        existingDevice.setActive(!existingDevice.getActive());
-        deviceRepository.save(existingDevice);
-        System.out.println( "State set to "+existingDevice.getActive());}
+    public String setDeviceState(String deviceId) {
+            Optional<Device> existingDeviceOptional = deviceRepository.findById(deviceId);
+            if (!existingDeviceOptional.isPresent()) {
+                System.out.println("Device not found!");
+                return "No device was found with this specific id";
+            }
+
+            Device existingDevice = existingDeviceOptional.get();
+            existingDevice.setActive(!existingDevice.getActive());
+            deviceRepository.save(existingDevice);
+            System.out.println("State set to " + existingDevice.getActive());
+            return "State set to " + existingDevice.getActive();
+        }
+
     @Override
     public deviceResponse updateDevice(String deviceId, Device deviceRequest) {
         deviceResponse response = null;
