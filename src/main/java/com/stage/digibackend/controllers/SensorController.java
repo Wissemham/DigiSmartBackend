@@ -3,9 +3,9 @@ package com.stage.digibackend.controllers;
 import com.stage.digibackend.Collections.Sensor;
 import com.stage.digibackend.services.ISensorService;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -16,10 +16,16 @@ public class SensorController {
     @Autowired
     ISensorService iSensorService ;
 
-    @PostMapping("/addSensor")
+
+    @PostMapping( "/addSensor")
     String addSensor(@RequestBody Sensor sensor){
-return iSensorService.addSensor(sensor);
+
+        return iSensorService.addSensor(sensor);
     }
+
+
+
+
     @PostMapping("/addSensors")
     String addSensors(@RequestBody List<Sensor> sensorList){
 return iSensorService.addSensors(sensorList);

@@ -59,10 +59,10 @@ public class SensorService implements ISensorService {
         if (sensor.getRangeMax() != existingSensor.getRangeMax() && sensor.getRangeMax()  != null){
             existingSensor.setRangeMax(sensor.getRangeMax() );
         }
-
+/*
         if (sensor.getImage() != existingSensor.getImage() && sensor.getImage() != null){
             existingSensor.setImage(sensor.getImage() );
-        }
+        }*/
         if (sensor.getUnit() != existingSensor.getUnit() && sensor.getUnit() != null){
             existingSensor.setUnit(sensor.getUnit() );
             existingSensor.setSymboleUnite(sensor.getUnit().getSymbol());

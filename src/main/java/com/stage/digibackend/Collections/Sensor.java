@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+
 import javax.validation.constraints.NotBlank;
 
 @Document(collection = "sensors")
@@ -21,7 +22,7 @@ public class Sensor {
     private Double rangeMin ;
     @NotBlank
     private Double rangeMax ;
-    private String image ;
+
 
     private EUnite unit ;
     private String symboleUnite ;
