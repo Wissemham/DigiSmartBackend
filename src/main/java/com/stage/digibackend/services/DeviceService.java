@@ -28,11 +28,19 @@ public class DeviceService implements IDeviceService {
     SensorService sensorService;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    IDataSensorService dataSensor;
     @Override
     public String addDevice(Device device) {
 
         if(deviceRepository.findBymacAdress(device.getMacAdress())==null) {
-            return deviceRepository.save(device).getDeviceId();
+
+            Device  d=deviceRepository.save(device);
+            for (String s:d.getSensorList()){
+                dataSensor.affecteSensorDevice(s,d.getDeviceId());}
+            return  d.toString();
+
+
         }
         return "Error a device exists with address mac";
     }
@@ -71,9 +79,9 @@ public class DeviceService implements IDeviceService {
             if (deviceRequest.getSensorList() != null && !deviceRequest.getSensorList().isEmpty()) {
                 existingDevice.setSensorList(deviceRequest.getSensorList());
             }
-            if (deviceRequest.getLocation() != null) {
-                existingDevice.setLocation(deviceRequest.getLocation());
-            }
+          //  if (deviceRequest.getLocation() != null) {
+              //  existingDevice.setLocation(deviceRequest.getLocation());
+           // }
             if (deviceRequest.getMacAdress() != null) {
                 existingDevice.setMacAdress(deviceRequest.getMacAdress());
             }
