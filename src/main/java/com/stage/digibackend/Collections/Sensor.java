@@ -27,7 +27,4 @@ public class Sensor {
     private Boolean signal ;
     private Double a ;
     private Double b ;
-
-
-
 }
