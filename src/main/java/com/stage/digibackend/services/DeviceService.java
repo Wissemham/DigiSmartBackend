@@ -6,6 +6,7 @@ import com.stage.digibackend.dto.OtpStatus;
 import com.stage.digibackend.dto.deviceResponse;
 import com.stage.digibackend.repository.DeviceRepository;
 import com.stage.digibackend.repository.UserRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -88,6 +89,12 @@ public class DeviceService implements IDeviceService {
             if (deviceRequest.getIdClient() != null) {
                 existingDevice.setIdClient(deviceRequest.getIdClient());
             }
+            if (deviceRequest.getLat() != null) {
+                existingDevice.setLat(deviceRequest.getLat());
+            }
+            if (deviceRequest.getLng() != null) {
+                existingDevice.setLng(deviceRequest.getLng());
+            }
             if (deviceRequest.getIdAdmin() != null) {
                 existingDevice.setIdAdmin(deviceRequest.getIdAdmin());
             }
@@ -110,7 +117,11 @@ public class DeviceService implements IDeviceService {
 
         Device existingDevice= deviceRepository.findById(deviceId).get();
         if(existingDevice.getIdAdmin()==null) {
+            String randomCode = RandomStringUtils.random(6, true, true);
+
             existingDevice.setIdAdmin(adminId);
+            existingDevice.setDeviceCode(randomCode);
+            existingDevice.setActive(true);
             deviceRepository.save(existingDevice);
             //get the user with the specific id to send him  mail with the mac address
             User currentAdmin = userRepository.findById(adminId).get();
@@ -119,7 +130,7 @@ public class DeviceService implements IDeviceService {
             String toAddress = currentAdmin.getEmail();
             String fromAddress = "alert@dig2s.com";
             String senderName = "Digi-Smart-Solution";
-            String subject = "Your mac address for your device:";
+            String subject = "Your code for your device:";
             String content = " <!DOCTYPE html><html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head>\n" +
                     "  <title> Welcome to [Coded Mails] </title>\n" +
                     "  <!--[if !mso]><!-- -->\n" +
@@ -253,7 +264,7 @@ public class DeviceService implements IDeviceService {
                     "                        <tbody><tr>\n" +
                     "                          <td align=\"center\" bgcolor=\"#54595f\" role=\"presentation\" style=\"border:none;border-radius:30px;cursor:auto;mso-padding-alt:10px 25px;background:#54595f;\" valign=\"middle\">\n" +
                     "                            <button disabled \"" +
-                    "\" style=\"display: inline-block;  background: #54595f; color: white; font-family: Nunito, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 30px; margin: 0; text-decoration: none; text-transform: none; padding: 10px 25px; mso-padding-alt: 0px; border-radius: 30px;\" target=\"_blank\"> " +existingDevice.getMacAdress()+
+                    "\" style=\"display: inline-block;  background: #54595f; color: white; font-family: Nunito, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 30px; margin: 0; text-decoration: none; text-transform: none; padding: 10px 25px; mso-padding-alt: 0px; border-radius: 30px;\" target=\"_blank\"> " +existingDevice.getDeviceCode()+
                     "</button>\n" +
                     "                          </td>\n" +
                     "                        </tr>\n" +

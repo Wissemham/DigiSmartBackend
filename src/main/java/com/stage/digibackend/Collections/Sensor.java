@@ -12,7 +12,6 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 public class Sensor {
-
     @Id
     private String sensorId ;
     @NotBlank
@@ -20,10 +19,8 @@ public class Sensor {
     private Double rangeMin ;
     private Double rangeMax ;
     private String image ;
-
     private EUnite unit ;
     private String symboleUnite ;
-
     private Boolean signal ;
     private Double a ;
     private Double b ;

@@ -6,7 +6,6 @@ import com.stage.digibackend.Collections.Sensor;
 import java.util.List;
 
 public interface ISensorService {
-
     String addSensor(Sensor sensor);
     String updateSensor(Sensor sensor,String idSensor);
     String deleteSensor(String sensorId);
