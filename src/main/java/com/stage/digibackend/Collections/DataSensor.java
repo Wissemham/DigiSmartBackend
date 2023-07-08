@@ -22,6 +22,10 @@ public class DataSensor {
     @DBRef
     private Device device ;
 
+    private Double time ;
+
+    private Double data ;
+
 
 
 

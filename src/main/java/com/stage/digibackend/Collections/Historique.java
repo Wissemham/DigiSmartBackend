@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Historique {
     @Id
-    private Long id;
+    private String id;
     @NotBlank
     private LocalDateTime date;
     @NotBlank

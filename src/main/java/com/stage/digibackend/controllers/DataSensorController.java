@@ -17,4 +17,11 @@ public class DataSensorController {
     public DataSensor affecteSensorDevice (@PathVariable String idSensor, @PathVariable String idDevice){
         return iDataSensorService.affecteSensorDevice(idSensor,idDevice);
     }
+
+    @PutMapping("loadDataInSensorDevice/{idSensor}/{idDevice}")
+    public DataSensor loadDataInSensorDevice(@PathVariable String idSensor,
+                                             @PathVariable String idDevice,
+                                             @RequestBody DataSensor dataSensor) {
+        return iDataSensorService.loadDataInSensorDevice(idSensor,idDevice,dataSensor.getTime(),dataSensor.getData());
+    }
 }
