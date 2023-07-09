@@ -24,6 +24,6 @@ public class Historique {
     @NotBlank
     private String action;
     @NotBlank
-    @DBRef
+    //@DBRef
     private DataSensor dataSensor;
 }

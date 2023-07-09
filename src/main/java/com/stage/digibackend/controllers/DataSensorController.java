@@ -22,6 +22,6 @@ public class DataSensorController {
     public DataSensor loadDataInSensorDevice(@PathVariable String idSensor,
                                              @PathVariable String idDevice,
                                              @RequestBody DataSensor dataSensor) {
-        return iDataSensorService.loadDataInSensorDevice(idSensor,idDevice,dataSensor.getTime(),dataSensor.getData());
+        return iDataSensorService.loadDataInSensorDevice(idSensor,idDevice,dataSensor.getData(),dataSensor.getGrowthStatus());
     }
 }
