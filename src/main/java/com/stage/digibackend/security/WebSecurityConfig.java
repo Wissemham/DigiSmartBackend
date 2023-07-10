@@ -81,7 +81,7 @@ public class WebSecurityConfig {
 
 
         .authorizeRequests().antMatchers("/api/auth/**","/addRole/**","/users/**","/resetPwd/**",
-					"/users/listAllClient","/send-email","verify/**","/sensor/**","/devices/**").permitAll()
+					"/users/listAllClient","/send-email","verify/**","/sensor/**","/devices/**","/dataSensor/**","/historique/**").permitAll()
 
 
 

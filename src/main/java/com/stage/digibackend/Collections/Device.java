@@ -23,8 +23,9 @@ public class Device {
     private Double lat;
     @NotBlank
     private Double lng;
-    @DBRef
     private List<String> sensorList ;
+    private String DeviceCode;
+    private String Location;
     private Boolean active;
     private String idAdmin;
     private String idClient;

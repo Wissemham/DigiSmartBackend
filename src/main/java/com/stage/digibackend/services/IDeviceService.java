@@ -19,5 +19,5 @@ public interface IDeviceService {
 List<Sensor> getSensorsList(String deviceId);
 List<Device> getAdminDevices(String adminId);
     List<Device> getClientDevices(String clientId);
-void setDeviceState(String deviceId);
+String setDeviceState(String deviceId);
 }

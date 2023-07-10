@@ -14,8 +14,8 @@ import java.util.Optional;
 public class SensorService implements ISensorService {
 
 
-        @Autowired
-        SensorRepository sensorRepository;
+    @Autowired
+    SensorRepository sensorRepository;
 
     @Override
     public String addSensor(Sensor sensor) {
