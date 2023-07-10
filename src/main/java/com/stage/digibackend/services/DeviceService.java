@@ -61,8 +61,7 @@ public class DeviceService implements IDeviceService {
 
         return savedDevice.toString();
     }
-    /*@Override
-    public List<Device> getAllDevices() {
+    public List<Device> getActiveDevices() {
         List<Device> devices = getAllDevices();
         List<Device> activeDevices = new ArrayList<>();
         for (Device device : devices) {
@@ -71,7 +70,7 @@ public class DeviceService implements IDeviceService {
             }
         }
         return activeDevices;
-    }*/
+    }
     @Override
     public List<Device> getAllDevices() {
         return deviceRepository.findAll();
@@ -124,9 +123,9 @@ public class DeviceService implements IDeviceService {
             if (deviceRequest.getSensorList() != null && !deviceRequest.getSensorList().isEmpty()) {
                 existingDevice.setSensorList(deviceRequest.getSensorList());
             }
-          //  if (deviceRequest.getLocation() != null) {
-              //  existingDevice.setLocation(deviceRequest.getLocation());
-           // }
+            if (deviceRequest.getLocation() != null) {
+                existingDevice.setLocation(deviceRequest.getLocation());
+            }
             if (deviceRequest.getMacAdress() != null) {
                 existingDevice.setMacAdress(deviceRequest.getMacAdress());
             }
@@ -134,6 +133,9 @@ public class DeviceService implements IDeviceService {
                 existingDevice.setIdClient(deviceRequest.getIdClient());
             }
             if (deviceRequest.getLat() != null) {
+                existingDevice.setLat(deviceRequest.getLat());
+            }
+            if (deviceRequest.getNom() != null) {
                 existingDevice.setLat(deviceRequest.getLat());
             }
             if (deviceRequest.getLng() != null) {
@@ -455,7 +457,7 @@ public class DeviceService implements IDeviceService {
         List<Device> devices = getAllDevices();
         List<Device> userDevices = new ArrayList<>();
         for (Device device : devices) {
-            if (device.getIdAdmin() != null && device.getIdAdmin().equals(adminId)) {
+            if (device.getIdAdmin() != null && device.getIdAdmin().equals(adminId)&& device.getActive()) {
                 System.out.println(device);
                 userDevices.add(device);
             }
