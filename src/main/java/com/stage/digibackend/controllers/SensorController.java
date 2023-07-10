@@ -1,5 +1,6 @@
 package com.stage.digibackend.controllers;
 
+import com.stage.digibackend.Collections.Device;
 import com.stage.digibackend.Collections.Sensor;
 import com.stage.digibackend.services.ISensorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,33 +25,43 @@ public class SensorController {
     }
 
 
-
-
+/*
     @PostMapping("/addSensors")
     String addSensors(@RequestBody List<Sensor> sensorList){
 return iSensorService.addSensors(sensorList);
     }
+*/
     @PutMapping("/updateSensor/{idSensor}")
     String updateSensor(@RequestBody Sensor sensor, @PathVariable String idSensor)
     {
-return iSensorService.updateSensor(sensor,idSensor);
+        return iSensorService.updateSensor(sensor,idSensor);
     }
+
     @DeleteMapping("/deleteSensor/{sensorId}")
     String deleteSensor(@PathVariable String sensorId){
 return iSensorService.deleteSensor(sensorId);
     }
+
     @GetMapping("/getSensorById/{sensorId}")
-    String getSensor(@PathVariable String sensorId)
+    Sensor getSensor(@PathVariable String sensorId)
     {
-return iSensorService.getSensor(sensorId);
+        return iSensorService.getSensor(sensorId);
     }
+
     @GetMapping("/getAllSensorsById")
     String getAllSensors(@RequestBody List<String> sensorIds)
     {
-return iSensorService.getAllSensors(sensorIds);
+        return iSensorService.getAllSensors(sensorIds);
     }
+
     @GetMapping("/getAllSensors")
     List<Sensor> getAllSensors(){
-return iSensorService.getAllSensors();
+        return iSensorService.getAllSensors();
 }
+
+    @GetMapping("/getAllSensorsSignal420")
+    public List<Sensor> getAllSensorsSignal420() {
+        return iSensorService.getAllSensorsSignal420();
+    }
+
 }

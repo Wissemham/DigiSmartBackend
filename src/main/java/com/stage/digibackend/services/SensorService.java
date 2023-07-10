@@ -1,13 +1,15 @@
 package com.stage.digibackend.services;
 
+import com.stage.digibackend.Collections.Device;
 import com.stage.digibackend.Collections.Sensor;
+import com.stage.digibackend.repository.DeviceRepository;
 import com.stage.digibackend.repository.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import com.stage.digibackend.Enumeration.EUnite ;
+
 @Service
 public class SensorService implements ISensorService {
 
@@ -20,21 +22,17 @@ public class SensorService implements ISensorService {
         if (sensorRepository.findSensorBySensorName(sensor.getSensorName()) != null) {
             return "Sensor name already exists!";
         }
-        sensor.setSymboleUnite(sensor.getUnit().getSymbol());
-        return "Sensor added successfully:\n" + sensorRepository.save(sensor);
-    }
-
-    @Override
-    public String addSensors(List<Sensor> sensorList) {
-        for (Sensor sensor : sensorList) {
-            if (sensorRepository.findSensorBySensorName(sensor.getSensorName()) != null) {
-                return "The Sensor with name " + sensor.getSensorName() + " already exists!";
-            }
+        if (sensor.getUnit() != null)
+        {
             sensor.setSymboleUnite(sensor.getUnit().getSymbol());
         }
-        return "Sensors added successfully:\n" + sensorRepository.saveAll(sensorList);
-    }
+        if(sensor.getSignal()==true ){
+            sensor.setA((sensor.getRangeMax()- sensor.getRangeMin())/16);
+            sensor.setB(sensor.getRangeMax()-(20* sensor.getA()));
+        }
 
+        return "Sensor added successfully:\n" + sensorRepository.save(sensor);
+    }
 
     @Override
         public String updateSensor(Sensor sensor,String idSensor) {
@@ -59,15 +57,25 @@ public class SensorService implements ISensorService {
         if (sensor.getRangeMax() != existingSensor.getRangeMax() && sensor.getRangeMax()  != null){
             existingSensor.setRangeMax(sensor.getRangeMax() );
         }
+
 /*
         if (sensor.getImage() != existingSensor.getImage() && sensor.getImage() != null){
             existingSensor.setImage(sensor.getImage() );
         }*/
+
         if (sensor.getUnit() != existingSensor.getUnit() && sensor.getUnit() != null){
             existingSensor.setUnit(sensor.getUnit() );
             existingSensor.setSymboleUnite(sensor.getUnit().getSymbol());
         }
 
+        if (sensor.getSignal() != existingSensor.getSignal() && sensor.getSignal()  != null){
+            existingSensor.setSignal(sensor.getSignal() );
+        }
+
+        if((existingSensor.getRangeMax() != null) && (existingSensor.getRangeMin()!= null)){
+            existingSensor.setA((sensor.getRangeMax()- sensor.getRangeMin())/16);
+            existingSensor.setB(sensor.getRangeMax()-(20* sensor.getA()));
+        }
         return "Sensor updated successfully:\n" + sensorRepository.save(existingSensor);
         }
 
@@ -81,12 +89,10 @@ public class SensorService implements ISensorService {
         }
 
         @Override
-        public String getSensor(String sensorId) {
-            Optional<Sensor> sensorOptional = sensorRepository.findById(sensorId);
-            if (sensorRepository.findById(sensorId) == null) {
-                return "Sensor does not exist!";
-            }
-            return "sensor deleted successfuly" ;
+        public Sensor getSensor(String sensorId) {
+            //Optional<Sensor> sensorOptional = sensorRepository.findById(sensorId);
+            return sensorRepository.findById(sensorId).get() ;
+
         }
 
 
@@ -110,7 +116,14 @@ public class SensorService implements ISensorService {
             List<Sensor> sensors = sensorRepository.findAll();
             return sensors;
         }
+
+    @Override
+    public List<Sensor> getAllSensorsSignal420() {
+       return sensorRepository.findAllBySignalIsTrue();
     }
+
+
+}
 
 
 

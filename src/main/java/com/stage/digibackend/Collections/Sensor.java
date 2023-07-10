@@ -18,14 +18,14 @@ public class Sensor {
     private String sensorId ;
     @NotBlank
     private String sensorName ;
-    @NotBlank
     private Double rangeMin ;
-    @NotBlank
     private Double rangeMax ;
 
 
     private EUnite unit ;
     private String symboleUnite ;
 
-
+    private Boolean signal ;
+    private Double a ;
+    private Double b ;
 }
