@@ -19,6 +19,7 @@ public class HistoriqueController {
         this.historiqueService = historiqueService;
     }
 
+
     @PostMapping("/addHistorique")
     public String addHistorique(@RequestBody Historique historique) {
         String result = historiqueService.addHistorique(historique);
