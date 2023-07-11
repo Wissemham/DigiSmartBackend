@@ -37,7 +37,6 @@ public class DataSensorController {
         byte[] pdfBytes = iDataSensorService.generateDataSensorHistoriquePdf(dataSensorId);
 
         ByteArrayResource resource = new ByteArrayResource(pdfBytes);
-        System.out.println(dataSensorId);
         return ResponseEntity.ok()
                 .header("Content-Disposition", "attachment; filename=historique.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
