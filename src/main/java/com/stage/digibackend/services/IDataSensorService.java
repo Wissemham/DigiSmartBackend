@@ -15,5 +15,5 @@ public interface IDataSensorService {
     DataSensor affecteSensorDevice (String idSensor, String idDevice);
     DataSensor loadDataInSensorDevice (String idSensor, String idDevice, Double data, GrowthStatus growthStatus, LocalDateTime latestUpdate);
     byte[] generateDataSensorHistoriquePdf(String dataSensorId) throws IOException ;
-    
+    String findByTwoId (String idSensor, String idDevice);
 }
