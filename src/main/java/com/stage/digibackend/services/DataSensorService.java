@@ -200,7 +200,6 @@ public class DataSensorService implements IDataSensorService {
     }
 
 
-
     @Override
     public String findByTwoId(String idSensor, String idDevice) {
         Optional<Device> device= deviceRepository.findById(idDevice);
