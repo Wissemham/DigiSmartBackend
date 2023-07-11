@@ -32,9 +32,19 @@ public class HistoriqueController {
         return historiqueList;
     }
 
-    @DeleteMapping("/deleteHistorique/{id}")
+    @DeleteMapping("/deleteHistorique/{historiqueId}")
     public String deleteHistorique(@PathVariable String historiqueId) {
         String result = historiqueService.deleteHistorique(historiqueId);
         return result;
+    }
+
+    @GetMapping("/findHistoriqueByDevice/{idDevice}")
+    public List<Historique> findHistoriqueByDevice(@PathVariable String idDevice) {
+        return historiqueService.findHistoriqueByDevice(idDevice);
+    }
+
+    @GetMapping("/findHistoriqueByDeviceAndSensor/{idDevice}/{idSensor}")
+    public List<Historique> findHistoriqueByDeviceAndSensor(@PathVariable String idDevice, @PathVariable String idSensor) {
+        return historiqueService.findHistoriqueByDeviceAndSensor(idDevice,idSensor);
     }
 }

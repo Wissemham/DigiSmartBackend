@@ -39,7 +39,7 @@ public class DataSensorService implements IDataSensorService {
     }
 
     @Override
-    public DataSensor loadDataInSensorDevice(String idSensor, String idDevice, Double data, GrowthStatus growthStatus) {
+    public DataSensor loadDataInSensorDevice(String idSensor, String idDevice, Double data, GrowthStatus growthStatus , LocalDateTime latestUpdate) {
         String action = "";
 
         Device device = deviceRepository.findById(idDevice)
@@ -50,8 +50,13 @@ public class DataSensorService implements IDataSensorService {
 
 
         DataSensor dataSensor = dataSensorRepository.findDataSensorByDeviceAndSensor(device, sensor);
+        if (dataSensor.getLatestUpdate() != null && !latestUpdate.toLocalDate().isEqual(dataSensor.getLatestUpdate().toLocalDate())) {
+            dataSensor.setTotal(0.0);
+            dataSensor.setData(0.0);
+        }
         dataSensor.setData(data);
-        dataSensor.setLatestUpdate(LocalDateTime.now());
+        //LocalDateTime.now()
+        dataSensor.setLatestUpdate(latestUpdate);
         dataSensor.setGrowthStatus(growthStatus);
 
         switch (growthStatus) {
