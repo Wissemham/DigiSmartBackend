@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.io.ByteArrayOutputStream;
+import java.util.Optional;
 
 @Service
 public class DataSensorService implements IDataSensorService {
@@ -200,5 +201,11 @@ public class DataSensorService implements IDataSensorService {
 
 
 
-
+    @Override
+    public String findByTwoId(String idSensor, String idDevice) {
+        Optional<Device> device= deviceRepository.findById(idDevice);
+        Sensor sensor = sensorRepository.findSensorBySensorId(idSensor);
+        DataSensor dataSensor = dataSensorRepository.findDataSensorByDeviceAndSensor(device, sensor);
+        return dataSensor.getDataSensorId();
+    }
 }

@@ -37,7 +37,7 @@ public class DataSensorController {
         byte[] pdfBytes = iDataSensorService.generateDataSensorHistoriquePdf(dataSensorId);
 
         ByteArrayResource resource = new ByteArrayResource(pdfBytes);
-
+        System.out.println(dataSensorId);
         return ResponseEntity.ok()
                 .header("Content-Disposition", "attachment; filename=historique.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
@@ -58,6 +58,12 @@ public class DataSensorController {
     @DeleteMapping("deleteDataSensorById/{idDataSensor}")
     void deleteDataSensorById(@PathVariable String idDataSensor){
         iDataSensorService.deleteDataSensorById(idDataSensor);
+    }
+    @GetMapping("DataId/{idSensor}/{idDevice}")
+    public String findByTwoId(@PathVariable String idSensor,@PathVariable String idDevice) {
+       String id= iDataSensorService.findByTwoId(idSensor,idDevice);
+       System.out.println(id);
+       return id;
     }
 
 
