@@ -198,8 +198,6 @@ public class DataSensorService implements IDataSensorService {
 
         return byteArrayOutputStream.toByteArray();
     }
-
-
     @Override
     public String findByTwoId(String idSensor, String idDevice) {
         Optional<Device> device= deviceRepository.findById(idDevice);
