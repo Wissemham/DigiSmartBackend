@@ -4,6 +4,10 @@ import com.stage.digibackend.Collections.Historique;
 import com.stage.digibackend.dto.ExportDataRequest;
 import com.stage.digibackend.services.IhistoriqueService;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Base64;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -69,11 +77,51 @@ public class HistoriqueController {
                 .contentLength(pdfBytes.length)
                 .body(resource);
     }
+
+    @GetMapping("/generateDeviceHistoriquePdf/{deviceId}")
+    public ResponseEntity<ByteArrayResource> generateDeviceHistoriquePdf(@PathVariable String deviceId,
+                                                              @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate ,
+                                                              @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate endDate) throws IOException {
+
+        byte[] pdfBytes = historiqueService.generateDeviceHistoriquePdf(deviceId,startDate,endDate);
+
+        ByteArrayResource resource = new ByteArrayResource(pdfBytes);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=device_historique.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .contentLength(pdfBytes.length)
+                .body(resource);
+
+    }
+
+    @GetMapping("/loadMore/{idDevice}")
+    public Page<Historique> getHistorique(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @PathVariable String idDevice
+    ) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return historiqueService.getHistorique(pageable);
+    }
+
+    @GetMapping("/loadMoreHistoricDevice/{deviceId}")
+    public Page<Historique> getHistoriqueByDevice(@PathVariable String deviceId,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "10") int pageSize) {
+
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return historiqueService.findHistoriqueByDevicePagebale(deviceId, pageable);
+
+    }
+
+
     @GetMapping("/exportToCSV/{deviceId}/{startDate}/{endDate}")
     public String exportDataToCSV(@PathVariable String deviceId,
                                                   @PathVariable String startDate,
                                                   @PathVariable String endDate) {
         String pattern = "yyyy-MM-dd'T'HH:mm:ss";
+
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
