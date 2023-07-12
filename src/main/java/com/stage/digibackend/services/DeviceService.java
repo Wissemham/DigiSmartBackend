@@ -71,18 +71,18 @@ public class DeviceService implements IDeviceService {
     }
     @Override
     public String setDeviceState(String deviceId) {
-            Optional<Device> existingDeviceOptional = deviceRepository.findById(deviceId);
-            if (!existingDeviceOptional.isPresent()) {
-                System.out.println("Device not found!");
-                return "No device was found with this specific id";
-            }
-
-            Device existingDevice = existingDeviceOptional.get();
-            existingDevice.setActive(!existingDevice.getActive());
-            deviceRepository.save(existingDevice);
-            System.out.println("State set to " + existingDevice.getActive());
-            return "State set to " + existingDevice.getActive();
+        Optional<Device> existingDeviceOptional = deviceRepository.findById(deviceId);
+        if (!existingDeviceOptional.isPresent()) {
+            System.out.println("Device not found!");
+            return "No device was found with this specific id";
         }
+
+        Device existingDevice = existingDeviceOptional.get();
+        existingDevice.setActive(!existingDevice.getActive());
+        deviceRepository.save(existingDevice);
+        System.out.println("State set to " + existingDevice.getActive());
+        return "State set to " + existingDevice.getActive();
+    }
 
     @Override
     public deviceResponse updateDevice(String deviceId, Device deviceRequest) {
@@ -95,9 +95,9 @@ public class DeviceService implements IDeviceService {
             if (deviceRequest.getSensorList() != null && !deviceRequest.getSensorList().isEmpty()) {
                 existingDevice.setSensorList(deviceRequest.getSensorList());
             }
-          //  if (deviceRequest.getLocation() != null) {
-              //  existingDevice.setLocation(deviceRequest.getLocation());
-           // }
+            //  if (deviceRequest.getLocation() != null) {
+            //  existingDevice.setLocation(deviceRequest.getLocation());
+            // }
             if (deviceRequest.getMacAdress() != null) {
                 existingDevice.setMacAdress(deviceRequest.getMacAdress());
             }
@@ -123,7 +123,7 @@ public class DeviceService implements IDeviceService {
 
     @Override
     public String deleteDevice(String deviceId) {
-         deviceRepository.deleteById(deviceId);
+        deviceRepository.deleteById(deviceId);
         return deviceId +"   Device deleted succesully";
     }
 
