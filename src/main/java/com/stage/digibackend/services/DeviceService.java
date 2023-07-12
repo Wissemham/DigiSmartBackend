@@ -59,7 +59,7 @@ public class DeviceService implements IDeviceService {
             dataSensor.affecteSensorDevice(sensor, savedDevice.getDeviceId());
         }
 
-        return savedDevice.toString();
+        return "ok";
     }
     public List<Device> getActiveDevices() {
         List<Device> devices = getAllDevices();
@@ -84,10 +84,10 @@ public class DeviceService implements IDeviceService {
             return null;
         }
         Device device = existingDeviceOptional.get();
-        if (!device.getActive()) {
-            System.out.println("Device state is false. Cannot retrieve device.");
-            return null;
-        }
+//        if (!device.getActive()) {
+//            System.out.println("Device state is false. Cannot retrieve device.");
+//            return null;
+//        }
         System.out.println(device);
         return device;
     }
