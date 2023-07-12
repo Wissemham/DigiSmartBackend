@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 @Service
 public class DeviceService implements IDeviceService {
     @Autowired
@@ -31,18 +32,46 @@ public class DeviceService implements IDeviceService {
     private JavaMailSender mailSender;
     @Autowired
     IDataSensorService dataSensor;
-    @Override
-    public String addDevice(Device device) {
+    Boolean verifyMacAdd(String addMac)
+    {
+         final String MAC_ADDRESS_PATTERN = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$";
+        Pattern pattern = Pattern.compile(MAC_ADDRESS_PATTERN);
+        Matcher matcher = pattern.matcher(addMac);
+        return matcher.matches();
 
-        if(deviceRepository.findBymacAdress(device.getMacAdress())==null) {
-            Device  d=deviceRepository.save(device);
-            for (String s:d.getSensorList()){
-                dataSensor.affecteSensorDevice(s,d.getDeviceId());}
-            return  d.toString();
-        }
-        return "Error a device exists with address mac";
     }
+    @Override
 
+    public String addDevice(Device device) {
+        String macAdd = device.getMacAdress();
+
+        if (deviceRepository.findBymacAdress(macAdd) != null) {
+            return "Error: A device already exists with the MAC address";
+        }
+
+        if (!verifyMacAdd(macAdd)) {
+            return "Error: Invalid MAC address";
+        }
+
+        Device savedDevice = deviceRepository.save(device);
+
+        for (String sensor : savedDevice.getSensorList()) {
+            dataSensor.affecteSensorDevice(sensor, savedDevice.getDeviceId());
+        }
+
+        return "ok";
+    }
+    /*@Override
+    public List<Device> getAllDevices() {
+        List<Device> devices = getAllDevices();
+        List<Device> activeDevices = new ArrayList<>();
+        for (Device device : devices) {
+            if (device.getActive()) {
+                activeDevices.add(device);
+            }
+        }
+        return activeDevices;
+    }*/
     @Override
     public List<Device> getAllDevices() {
         return deviceRepository.findAll();
@@ -56,10 +85,10 @@ public class DeviceService implements IDeviceService {
             return null;
         }
         Device device = existingDeviceOptional.get();
-        if (!device.getActive()) {
-            System.out.println("Device state is false. Cannot retrieve device.");
-            return null;
-        }
+//        if (!device.getActive()) {
+//            System.out.println("Device state is false. Cannot retrieve device.");
+//            return null;
+//        }
         System.out.println(device);
         return device;
     }
