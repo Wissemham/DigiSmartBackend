@@ -1,6 +1,7 @@
 package com.stage.digibackend.controllers;
 
 import com.stage.digibackend.Collections.Historique;
+import com.stage.digibackend.dto.ExportDataRequest;
 import com.stage.digibackend.services.IhistoriqueService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -12,10 +13,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
@@ -70,6 +77,7 @@ public class HistoriqueController {
                 .contentLength(pdfBytes.length)
                 .body(resource);
     }
+
     @GetMapping("/generateDeviceHistoriquePdf/{deviceId}")
     public ResponseEntity<ByteArrayResource> generateDeviceHistoriquePdf(@PathVariable String deviceId,
                                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate ,
@@ -108,4 +116,22 @@ public class HistoriqueController {
     }
 
 
+    @GetMapping("/exportToCSV/{deviceId}/{startDate}/{endDate}")
+    public String exportDataToCSV(@PathVariable String deviceId,
+                                                  @PathVariable String startDate,
+                                                  @PathVariable String endDate) {
+        String pattern = "yyyy-MM-dd'T'HH:mm:ss";
+
+
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+            LocalDateTime startDateForm = LocalDateTime.parse(startDate, formatter);
+            LocalDateTime enddateForm = LocalDateTime.parse(endDate, formatter);
+
+            historiqueService.exportToCSV(deviceId, startDateForm, enddateForm);
+            return "Data history exported to CSV file";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
 }

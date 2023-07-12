@@ -31,6 +31,20 @@ public class DataSensorController {
         return iDataSensorService.loadDataInSensorDevice(idSensor,idDevice,dataSensor.getData(),dataSensor.getGrowthStatus(),dataSensor.getLatestUpdate());
     }
 
+    @GetMapping("/generateDataSensorHistoriquePdf/{dataSensorId}")
+    public ResponseEntity<ByteArrayResource> generateDataSensorHistoriquePdf(@PathVariable String dataSensorId) throws IOException {
+
+        byte[] pdfBytes = iDataSensorService.generateDataSensorHistoriquePdf(dataSensorId);
+
+        ByteArrayResource resource = new ByteArrayResource(pdfBytes);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=historique.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .contentLength(pdfBytes.length)
+                .body(resource);
+    }
+
     @GetMapping("/findAllDataSensors")
     List<DataSensor> findAllDataSensors(){
         return iDataSensorService.findAllDataSensors() ;
@@ -45,6 +59,11 @@ public class DataSensorController {
     void deleteDataSensorById(@PathVariable String idDataSensor){
         iDataSensorService.deleteDataSensorById(idDataSensor);
     }
-
+    @GetMapping("DataId/{idSensor}/{idDevice}")
+    public String findByTwoId(@PathVariable String idSensor,@PathVariable String idDevice) {
+        String id= iDataSensorService.findByTwoId(idSensor,idDevice);
+        System.out.println(id);
+        return id;
+    }
 
 }

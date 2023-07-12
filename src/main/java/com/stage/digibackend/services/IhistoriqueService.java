@@ -5,8 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+
 import java.util.List;
 
 public interface IhistoriqueService {
@@ -25,4 +30,7 @@ public interface IhistoriqueService {
     Page<Historique> getHistorique(Pageable pageable);
 
     Page<Historique> findHistoriqueByDevicePagebale(String idDevice, Pageable pageable);
+
+    void exportToCSV(String deviceId, LocalDateTime startDate, LocalDateTime endDate);
+
 }
