@@ -164,7 +164,6 @@ public class DeviceService implements IDeviceService {
         Device existingDevice= deviceRepository.findById(deviceId).get();
         if(existingDevice.getIdAdmin()==null) {
             String randomCode = RandomStringUtils.random(6, true, true);
-
             existingDevice.setIdAdmin(adminId);
             existingDevice.setDeviceCode(randomCode);
             existingDevice.setActive(true);

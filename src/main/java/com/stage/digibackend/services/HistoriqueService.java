@@ -4,7 +4,12 @@ import com.stage.digibackend.Collections.Historique;
 import com.stage.digibackend.repository.HistoriqueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -32,5 +37,6 @@ public class HistoriqueService implements IhistoriqueService {
         historiqueRepository.deleteById(historiqueId);
         return "Historique supprimé avec succès.";
     }
+
 
 }
