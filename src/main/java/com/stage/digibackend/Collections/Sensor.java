@@ -19,7 +19,6 @@ public class Sensor {
     private String sensorName ;
     private Double rangeMin ;
     private Double rangeMax ;
-
     private EUnite unit ;
     private String symboleUnite ;
     private Boolean signal ;
