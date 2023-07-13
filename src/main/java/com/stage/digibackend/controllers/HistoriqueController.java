@@ -116,10 +116,10 @@ public class HistoriqueController {
     }
 
 
-    @GetMapping("/exportToCSV/{deviceId}/{startDate}/{endDate}")
+    @GetMapping("/exportToCSV/{deviceId}")
     public String exportDataToCSV(@PathVariable String deviceId,
-                                                  @PathVariable String startDate,
-                                                  @PathVariable String endDate) {
+                                                  @RequestParam String startDate,
+                                                  @RequestParam String endDate) {
         String pattern = "yyyy-MM-dd'T'HH:mm:ss";
 
 
