@@ -1,4 +1,5 @@
 package com.stage.digibackend.services;
+import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
@@ -275,61 +276,80 @@ public class HistoriqueService implements IhistoriqueService {
 
     }
 
+@Override
 
 
     public void exportToCSV(String deviceId, LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+
+        if (startDate.plusMonths(3).isBefore(endDate)) {
+            throw new IllegalArgumentException("Date range cannot exceed three months.");
+        }
+
         List<Historique> deviceHist = findHistoriqueByDevice(deviceId);
         List<Historique> filteredHist = new ArrayList<>();
         for (Historique hist : deviceHist) {
             LocalDateTime histDate = hist.getDate();
-
             if (histDate.compareTo(startDate) >= 0 && histDate.compareTo(endDate) <= 0) {
                 filteredHist.add(hist);
             }
         }
+
         String userHomeDir = System.getProperty("user.home");
         String csvFilePath = userHomeDir + File.separator + "historique.csv";
-System.out.println(csvFilePath);
-        try (ICsvBeanWriter csvWriter = new CsvBeanWriter(new FileWriter(csvFilePath),
-                CsvPreference.STANDARD_PREFERENCE)) {
+        System.out.println(csvFilePath);
 
+        try (ICsvBeanWriter csvWriter = new CsvBeanWriter(new FileWriter(csvFilePath),
+                CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE)) {
             String[] header = {"historyId", "date", "action", "deviceId", "deviceName", "macAddress",
-                    "sensorId", "sensorName", "sensorUnit", "data", "total"};
+                    "sensorId", "sensorName", "sensorUnit", "rangeMin", "rangeMax", "signal",
+                    "coefficientA", "coefficientB", "latestUpdate", "growthStatus", "data", "total"};
 
             csvWriter.writeHeader(header);
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            CellProcessor[] processors = new CellProcessor[]{
+                    new Optional(), // historyId
+                    new Optional(), // date
+                    new Optional(), // action
+                    new Optional(), // deviceId
+                    new Optional(), // deviceName
+                    new Optional(), // macAddress
+                    new Optional(), // sensorId
+                    new Optional(), // sensorName
+                    new Optional(), // sensorUnit
+                    new Optional(), // rangeMin
+                    new Optional(), // rangeMax
+                    new Optional(), // signal
+                    new Optional(), // coefficientA
+                    new Optional(), // coefficientB
+                    new Optional(), // latestUpdate
+                    new Optional(), // growthStatus
+                    new Optional(), // data
+                    new Optional() // total
+            };
 
             for (Historique hist : filteredHist) {
-                System.out.println(hist);
-
-                DataSensor dataSensor = hist.getDataSensor();
                 CsvData csvData = new CsvData();
-                csvData.setHistoryId(hist.getId());
+                csvData.setHistoryId(String.valueOf(hist.getId()));
                 csvData.setDate(hist.getDate().toString());
                 csvData.setAction(hist.getAction());
-                csvData.setDeviceId(dataSensor.getDevice().getDeviceId());
-                csvData.setDeviceName(dataSensor.getDevice().getNom());
-                csvData.setMacAddress(dataSensor.getDevice().getMacAdress());
-                csvData.setSensorId(dataSensor.getSensor().getSensorId());
-                csvData.setSensorName(dataSensor.getSensor().getSensorName());
-                csvData.setSensorUnit(dataSensor.getSensor().getSymboleUnite());
-                csvData.setData(dataSensor.getData());
-                csvData.setTotal(dataSensor.getTotal());
-
-                CellProcessor[] processors = new CellProcessor[]{
-                        new NotNull(), // historyId (mandatory field)
-                        new NotNull(), // date
-                        new NotNull(), // action (mandatory field)
-                        new NotNull(), // deviceId (mandatory field)
-                        new NotNull(), // deviceName (mandatory field)
-                        new NotNull(), // macAddress (mandatory field)
-                        new NotNull(), // sensorId (mandatory field)
-                        new NotNull(), // sensorName (mandatory field)
-                        new NotNull(), // sensorUnit (mandatory field)
-                        null, // data
-                        null // total
-                };
+                csvData.setDeviceId(hist.getDataSensor().getDevice().getDeviceId());
+                csvData.setDeviceName(hist.getDataSensor().getDevice().getNom());
+                csvData.setMacAddress(hist.getDataSensor().getDevice().getMacAdress());
+                csvData.setSensorId(hist.getDataSensor().getSensor().getSensorId());
+                csvData.setSensorName(hist.getDataSensor().getSensor().getSensorName());
+                csvData.setSensorUnit(hist.getDataSensor().getSensor().getSymboleUnite());
+                csvData.setRangeMin(hist.getDataSensor().getSensor().getRangeMin());
+                csvData.setRangeMax(hist.getDataSensor().getSensor().getRangeMax());
+                csvData.setSignal(hist.getDataSensor().getSensor().getSignal());
+                csvData.setCoefficientA(hist.getDataSensor().getSensor().getA());
+                csvData.setCoefficientB(hist.getDataSensor().getSensor().getB());
+                csvData.setLatestUpdate(hist.getDataSensor().getLatestUpdate().toString());
+                csvData.setGrowthStatus(hist.getDataSensor().getGrowthStatus().toString());
+                csvData.setData(hist.getDataSensor().getData());
+                csvData.setTotal(hist.getDataSensor().getTotal());
 
                 csvWriter.write(csvData, header, processors);
             }
@@ -338,5 +358,6 @@ System.out.println(csvFilePath);
             e.printStackTrace();
         }
     }
+
 
 }
