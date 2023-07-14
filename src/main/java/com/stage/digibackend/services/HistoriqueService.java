@@ -276,7 +276,7 @@ public class HistoriqueService implements IhistoriqueService {
 
     }
 
-@Override
+    @Override
 
 
     public void exportToCSV(String deviceId, LocalDateTime startDate, LocalDateTime endDate) {
@@ -297,9 +297,9 @@ public class HistoriqueService implements IhistoriqueService {
             }
         }
 
-    String userHomeDir = System.getProperty("user.home");
-    String downloadsDir = userHomeDir + File.separator + "Downloads";
-    String csvFilePath = downloadsDir + File.separator + "historique.csv";
+        String userHomeDir = System.getProperty("user.home");
+        String downloadsDir = userHomeDir + File.separator + "Downloads";
+        String csvFilePath = downloadsDir + File.separator + "historique.csv";
         System.out.println(csvFilePath);
 
         try (ICsvBeanWriter csvWriter = new CsvBeanWriter(new FileWriter(csvFilePath),
