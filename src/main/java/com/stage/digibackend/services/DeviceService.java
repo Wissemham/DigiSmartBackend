@@ -84,10 +84,7 @@ public class DeviceService implements IDeviceService {
             return null;
         }
         Device device = existingDeviceOptional.get();
-//        if (!device.getActive()) {
-//            System.out.println("Device state is false. Cannot retrieve device.");
-//            return null;
-//        }
+
         System.out.println(device);
         return device;
     }
@@ -123,6 +120,7 @@ public class DeviceService implements IDeviceService {
             if (deviceRequest.getSensorList() != null && !deviceRequest.getSensorList().isEmpty()) {
                 existingDevice.setSensorList(deviceRequest.getSensorList());
             }
+
             if (deviceRequest.getLocation() != null) {
                 existingDevice.setLocation(deviceRequest.getLocation());
             }

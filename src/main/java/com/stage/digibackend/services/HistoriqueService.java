@@ -18,6 +18,7 @@ import com.stage.digibackend.repository.DeviceRepository;
 import com.stage.digibackend.repository.HistoriqueRepository;
 import com.stage.digibackend.repository.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,11 +31,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class HistoriqueService implements IhistoriqueService {
@@ -162,6 +168,102 @@ public class HistoriqueService implements IhistoriqueService {
 
         return byteArrayOutputStream.toByteArray();
     }
+
+
+    @Override
+    public List<Map<String, Object>> groupHistoriqueDataBySensorAndDate(String deviceId,int offset,int pagesize) {
+        Device device = deviceRepository.findById(deviceId)
+                .orElseThrow(() -> new IllegalArgumentException("Device not found"));
+        System.out.println("*****************");
+        List<Historique> historiqueList = historiqueRepository.findAllByDataSensorDevice(device,PageRequest.of(offset,pagesize));
+
+        Map<String, List<Historique>> sensorDataMap = new HashMap<>();
+
+        for (Historique historique : historiqueList) {
+            DataSensor dataSensor = historique.getDataSensor();
+            Sensor sensor = dataSensor.getSensor();
+
+            String sensorId = sensor.getSensorName();
+            Double dataValue = dataSensor.getData();
+            String date = historique.getDate().toString();
+
+            // Group data by Sensor and Date
+
+            String unite = sensor.getUnit().getSymbol();
+            String key = sensorId+"_"+unite;
+            sensorDataMap.computeIfAbsent(key, k -> new ArrayList<>()).add(historique);
+        }
+
+        return sensorDataMap.entrySet().stream()
+                .map(entry -> {
+                    String sensorId = entry.getKey();
+                    List<Historique> historiques = entry.getValue();
+                    List<Map<String, Object>> series = historiques.stream()
+                            .map(historique -> {
+                                Double value = historique.getDataSensor().getData();
+                                String date = historique.getDate().toString();
+                                Map<String, Object> seriesEntry = new HashMap<>();
+                                seriesEntry.put("value", value );
+                                seriesEntry.put("name", date);
+                                return seriesEntry;
+                            })
+                            .collect(Collectors.toList());
+
+                    Map<String, Object> sensorData = new HashMap<>();
+                    sensorData.put("name", sensorId);
+                    sensorData.put("series", series);
+                    return sensorData;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> groupHistoriqueDataBySensorAndDate1(String deviceId, LocalDate startDate, LocalDate endDate) {
+        Device device = deviceRepository.findById(deviceId)
+                .orElseThrow(() -> new IllegalArgumentException("Device not found"));
+        System.out.println("*****************");
+        List<Historique> historiqueList = historiqueRepository.findAllByDataSensorDeviceAndDateBetween(device, startDate, endDate);
+
+        Map<String, List<Historique>> sensorDataMap = new HashMap<>();
+
+        for (Historique historique : historiqueList) {
+            DataSensor dataSensor = historique.getDataSensor();
+            Sensor sensor = dataSensor.getSensor();
+
+            String sensorId = sensor.getSensorName();
+            Double dataValue = dataSensor.getData();
+            String date = historique.getDate().toString();
+
+            // Group data by Sensor and Date
+
+            String unite = sensor.getUnit().getSymbol();
+            String key = sensorId + "_" + unite;
+            sensorDataMap.computeIfAbsent(key, k -> new ArrayList<>()).add(historique);
+        }
+
+        return sensorDataMap.entrySet().stream()
+                .map(entry -> {
+                    String sensorId = entry.getKey();
+                    List<Historique> historiques = entry.getValue();
+                    List<Map<String, Object>> series = historiques.stream()
+                            .map(historique -> {
+                                Double value = historique.getDataSensor().getData();
+                                String date = historique.getDate().toString();
+                                Map<String, Object> seriesEntry = new HashMap<>();
+                                seriesEntry.put("value", value);
+                                seriesEntry.put("name", date);
+                                return seriesEntry;
+                            })
+                            .collect(Collectors.toList());
+
+                    Map<String, Object> sensorData = new HashMap<>();
+                    sensorData.put("name", sensorId);
+                    sensorData.put("series", series);
+                    return sensorData;
+                })
+                .collect(Collectors.toList());
+    }
+
+
 
     @Override
     public byte[] generateDeviceHistoriquePdf(String deviceId, LocalDate startDate, LocalDate endDate) throws IOException {

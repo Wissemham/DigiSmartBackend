@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IhistoriqueService {
     String addHistorique(Historique historique);
@@ -23,6 +25,9 @@ public interface IhistoriqueService {
 
     byte[] generateDataSensorHistoriquePdf(String dataSensorId) throws IOException;
 
+    List<Map<String, Object>> groupHistoriqueDataBySensorAndDate(String deviceId,int offset,int pagesize);
+
+    public List<Map<String, Object>> groupHistoriqueDataBySensorAndDate1(String deviceId, LocalDate startDate, LocalDate endDate);
     byte[] generateDeviceHistoriquePdf(String deviceId, LocalDate startDate, LocalDate endDate) throws IOException;
 
     //List<Historique> getHistorique(int page, int pageSize);

@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
+
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/historique")
@@ -76,6 +76,19 @@ public class HistoriqueController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .contentLength(pdfBytes.length)
                 .body(resource);
+    }
+
+
+    @GetMapping("/device/{deviceId}/{offset}/{pagesize}")
+    public List<Map<String, Object>> groupHistoriqueDataBySensorAndDate(@PathVariable String deviceId,@PathVariable int offset,@PathVariable int pagesize) {
+        return historiqueService.groupHistoriqueDataBySensorAndDate(deviceId , offset, pagesize);
+    }
+
+
+
+    @GetMapping("/device1/{deviceId}/{debut}/{fin}")
+    public List<Map<String, Object>> groupHistoriqueDataBySensorAndDate1(@PathVariable String deviceId, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate debut, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fin) {
+        return historiqueService.groupHistoriqueDataBySensorAndDate1(deviceId , debut, fin);
     }
 
     @GetMapping("/generateDeviceHistoriquePdf/{deviceId}")
