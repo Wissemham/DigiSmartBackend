@@ -109,12 +109,12 @@ public class Userservice implements IUserservice {
 
     @Override
     public User updateUser(String userId,User userRequest) {
-        //get the document from db with the specific id
         User existingUser= userRepository.findById(userId).get();
         existingUser.setTelephone(userRequest.getTelephone());
         existingUser.setEmail(userRequest.getEmail());
-        existingUser.setRoles(userRequest.getRoles());
-        existingUser.setPassword(userRequest.getPassword());
+        existingUser.setGenre(userRequest.getGenre());
+        existingUser.setUsername(userRequest.getUsername());
+        existingUser.setAdresse(userRequest.getAdresse());
         return userRepository.save(existingUser);
     }
     @Override
