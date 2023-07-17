@@ -30,4 +30,5 @@ public class Device {
     private String idAdmin;
     private String idClient;
 
+
 }

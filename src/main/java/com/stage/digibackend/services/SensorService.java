@@ -26,7 +26,7 @@ public class SensorService implements ISensorService {
         {
             sensor.setSymboleUnite(sensor.getUnit().getSymbol());
         }
-        if(sensor.getSignal()==true ){
+        if(sensor.getSignal()==true && sensor.getSignal()!=null){
             sensor.setA((sensor.getRangeMax()- sensor.getRangeMin())/16);
             sensor.setB(sensor.getRangeMax()-(20* sensor.getA()));
         }
