@@ -426,6 +426,25 @@ public class DeviceService implements IDeviceService {
     }
 
     @Override
+    public String affectDeviceToClient(String deviceId, String clientId) {
+        Device existingDevice = deviceRepository.findById(deviceId).get();
+        if (existingDevice == null) {
+            System.out.println("Device not found!");
+            return "no device exists with this id";
+        }
+        if(existingDevice.getIdClient()!=null) {
+            return "device already affected to a client";
+
+        }
+        String randomCode = RandomStringUtils.random(6, true, true);
+        existingDevice.setIdClient(clientId);
+        existingDevice.setDeviceCode(randomCode);
+        deviceRepository.save(existingDevice);
+            return "device successufully  affected to a client" + existingDevice.getIdClient();
+
+        }
+
+    @Override
     public List<Sensor> getSensorsList(String deviceId) {
         Device existingDevice = deviceRepository.findById(deviceId).get();
         if (existingDevice == null) {
