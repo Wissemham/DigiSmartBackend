@@ -494,9 +494,7 @@ public class DeviceService implements IDeviceService {
         List<Device> devices = getAllDevices();
         List<Device> clientDevices = new ArrayList<>();
         for (Device device : devices) {
-
             if (device.getIdClient().equals(clientId)) {
-
                 System.out.println(device);
                 clientDevices.add(device);
             }
