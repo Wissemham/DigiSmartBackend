@@ -109,14 +109,47 @@ public class Userservice implements IUserservice {
 
     @Override
     public User updateUser(String userId,User userRequest) {
-        //get the document from db with the specific id
-        User existingUser= userRepository.findById(userId).get();
-        existingUser.setTelephone(userRequest.getTelephone());
-        existingUser.setEmail(userRequest.getEmail());
-        existingUser.setRoles(userRequest.getRoles());
-        existingUser.setPassword(userRequest.getPassword());
-        return userRepository.save(existingUser);
-    }
+            User existingUser = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            if (userRequest.getTelephone() != null && !userRequest.getTelephone().isEmpty()) {
+                existingUser.setTelephone(userRequest.getTelephone());
+            }
+
+            if (userRequest.getGenre() != null && !userRequest.getGenre().isEmpty()) {
+                existingUser.setGenre(userRequest.getGenre());
+            }
+
+            if (userRequest.getUsername() != null && !userRequest.getUsername().isEmpty()) {
+                existingUser.setUsername(userRequest.getUsername());
+            }
+
+            if (userRequest.getAdresse() != null && !userRequest.getAdresse().isEmpty()) {
+                existingUser.setAdresse(userRequest.getAdresse());
+            }
+
+            if (userRequest.getPassword() == null || userRequest.getPassword().isEmpty()) {
+                userRequest.setPassword(existingUser.getPassword());
+            }
+            existingUser.setPassword(userRequest.getPassword());
+
+            if (userRequest.getEmail() == null || userRequest.getEmail().isEmpty()) {
+                userRequest.setEmail(existingUser.getEmail());
+            }
+            existingUser.setEmail(userRequest.getEmail());
+
+            if (userRequest.getVerificationCode() == null || userRequest.getVerificationCode().isEmpty()) {
+                userRequest.setVerificationCode(existingUser.getVerificationCode());
+            }
+            existingUser.setVerificationCode(userRequest.getVerificationCode());
+
+            if (userRequest.getVerify() == null || userRequest.getVerify().isEmpty()) {
+                userRequest.setVerify(existingUser.getVerify());
+            }
+            existingUser.setVerify(userRequest.getVerify());
+
+            return userRepository.save(existingUser);
+        }
+
+
     @Override
     public String deleteUser(String userId) {
         userRepository.deleteById(userId);

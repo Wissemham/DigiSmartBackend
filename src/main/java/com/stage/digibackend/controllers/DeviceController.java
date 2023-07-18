@@ -58,6 +58,9 @@ public class DeviceController {
     @PutMapping("/affectToAdmin/{deviceId}")
     public String affectToAdmin(@PathVariable String deviceId, @RequestBody String adminId) throws MessagingException, UnsupportedEncodingException {
         return ideviceService.affectDeviceToAdmin(deviceId,adminId);}
+    @PutMapping("/affectToClient/{deviceId}")
+    public String affectToClient(@PathVariable String deviceId, @RequestBody String clientId) {
+        return ideviceService.affectDeviceToClient(deviceId,clientId);}
     @GetMapping("/getSensorList/{deviceId}")
     List<Sensor> getAllSensors(@PathVariable String deviceId){
         return ideviceService.getSensorsList(deviceId);

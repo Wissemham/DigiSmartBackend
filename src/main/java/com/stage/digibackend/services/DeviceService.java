@@ -61,8 +61,7 @@ public class DeviceService implements IDeviceService {
 
         return "ok";
     }
-    /*@Override
-    public List<Device> getAllDevices() {
+    public List<Device> getActiveDevices() {
         List<Device> devices = getAllDevices();
         List<Device> activeDevices = new ArrayList<>();
         for (Device device : devices) {
@@ -71,7 +70,7 @@ public class DeviceService implements IDeviceService {
             }
         }
         return activeDevices;
-    }*/
+    }
     @Override
     public List<Device> getAllDevices() {
         return deviceRepository.findAll();
@@ -85,10 +84,7 @@ public class DeviceService implements IDeviceService {
             return null;
         }
         Device device = existingDeviceOptional.get();
-//        if (!device.getActive()) {
-//            System.out.println("Device state is false. Cannot retrieve device.");
-//            return null;
-//        }
+
         System.out.println(device);
         return device;
     }
@@ -124,9 +120,12 @@ public class DeviceService implements IDeviceService {
             if (deviceRequest.getSensorList() != null && !deviceRequest.getSensorList().isEmpty()) {
                 existingDevice.setSensorList(deviceRequest.getSensorList());
             }
-            //  if (deviceRequest.getLocation() != null) {
-            //  existingDevice.setLocation(deviceRequest.getLocation());
-            // }
+
+
+            if (deviceRequest.getLocation() != null) {
+                existingDevice.setLocation(deviceRequest.getLocation());
+            }
+
             if (deviceRequest.getMacAdress() != null) {
                 existingDevice.setMacAdress(deviceRequest.getMacAdress());
             }
@@ -134,6 +133,9 @@ public class DeviceService implements IDeviceService {
                 existingDevice.setIdClient(deviceRequest.getIdClient());
             }
             if (deviceRequest.getLat() != null) {
+                existingDevice.setLat(deviceRequest.getLat());
+            }
+            if (deviceRequest.getNom() != null) {
                 existingDevice.setLat(deviceRequest.getLat());
             }
             if (deviceRequest.getLng() != null) {
@@ -162,7 +164,6 @@ public class DeviceService implements IDeviceService {
         Device existingDevice= deviceRepository.findById(deviceId).get();
         if(existingDevice.getIdAdmin()==null) {
             String randomCode = RandomStringUtils.random(6, true, true);
-
             existingDevice.setIdAdmin(adminId);
             existingDevice.setDeviceCode(randomCode);
             existingDevice.setActive(true);
@@ -427,6 +428,25 @@ public class DeviceService implements IDeviceService {
     }
 
     @Override
+    public String affectDeviceToClient(String deviceId, String clientId) {
+        Device existingDevice = deviceRepository.findById(deviceId).get();
+        if (existingDevice == null) {
+            System.out.println("Device not found!");
+            return "no device exists with this id";
+        }
+        if(existingDevice.getIdClient()!=null) {
+            return "device already affected to a client";
+
+        }
+        String randomCode = RandomStringUtils.random(6, true, true);
+        existingDevice.setIdClient(clientId);
+        existingDevice.setDeviceCode(randomCode);
+        deviceRepository.save(existingDevice);
+            return "device successufully  affected to a client" + existingDevice.getIdClient();
+
+        }
+
+    @Override
     public List<Sensor> getSensorsList(String deviceId) {
         Device existingDevice = deviceRepository.findById(deviceId).get();
         if (existingDevice == null) {
@@ -476,9 +496,7 @@ public class DeviceService implements IDeviceService {
         List<Device> devices = getAllDevices();
         List<Device> clientDevices = new ArrayList<>();
         for (Device device : devices) {
-
             if (device.getIdClient().equals(clientId)) {
-
                 System.out.println(device);
                 clientDevices.add(device);
             }

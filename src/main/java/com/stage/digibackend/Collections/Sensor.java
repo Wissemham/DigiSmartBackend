@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+
 import javax.validation.constraints.NotBlank;
 
 @Document(collection = "sensors")
@@ -23,4 +24,6 @@ public class Sensor {
     private Boolean signal ;
     private Double a ;
     private Double b ;
+    private Boolean isPulse ;
+    private Double pulseValue ;
 }
