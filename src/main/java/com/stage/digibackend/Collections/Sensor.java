@@ -26,4 +26,5 @@ public class Sensor {
     private Double b ;
     private Boolean isPulse ;
     private Double pulseValue ;
+    private Double pulseInit ;
 }
