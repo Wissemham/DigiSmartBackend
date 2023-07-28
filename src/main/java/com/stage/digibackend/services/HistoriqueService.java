@@ -1,6 +1,5 @@
 package com.stage.digibackend.services;
 import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -20,7 +19,6 @@ import com.stage.digibackend.repository.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.supercsv.io.CsvBeanWriter;
@@ -32,21 +30,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -460,6 +452,14 @@ public class HistoriqueService implements IhistoriqueService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<Historique> lastMonthHistorique(String idDevice) {
+
+        LocalDateTime lastMonthDate = LocalDateTime.now().minusMonths(7);
+        Device d = deviceRepository.findById(idDevice).get();
+        return historiqueRepository.findHistoriqueForLastMonth(d,lastMonthDate);
     }
 
 

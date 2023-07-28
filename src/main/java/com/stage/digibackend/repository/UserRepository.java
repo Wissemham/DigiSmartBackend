@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, String> {
+
+  List<User> findAll();
   Optional<User> findByUsername(String username);
   @Query(value = "{'email' : ?0}")
   Optional<User> findByEmail(String email);
@@ -18,8 +20,10 @@ public interface UserRepository extends MongoRepository<User, String> {
   Boolean existsByEmail(String email);
 
 User findByTelephone(String telephone);
-  @Query(value="{'roles' : ?0}")
+  @Query(value="{'roles.id' : ?0}")
   List<User> findByRoleNot(String role);
+
+
   @Query(value="{'admin' : ?0}")
   List<User> findByAdmin(String admin);
   @Query(value = "{'email' : ?0}")

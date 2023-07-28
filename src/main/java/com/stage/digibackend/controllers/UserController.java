@@ -79,7 +79,7 @@ public class UserController {
     public User modifyUser(@PathVariable String userId,@RequestBody User user) {
         return iUserService.updateUser(userId,user);
     }
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+    //@PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
     @DeleteMapping("/deleteuser/{userId}")
     public String deleteUser(@PathVariable String userId)
     {

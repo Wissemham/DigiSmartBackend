@@ -147,4 +147,9 @@ public class HistoriqueController {
             return e.getMessage();
         }
     }
+
+    @GetMapping("/lastMonth/{idDevice}")
+    List<Historique> lastMonth(@PathVariable String idDevice){
+        return historiqueService.lastMonthHistorique(idDevice);
+    }
 }

@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController implements DisposableBean, InitializingBean {
+public class AuthController implements InitializingBean {
 	@Autowired
 	AuthenticationManager authenticationManager;
 
@@ -118,12 +118,14 @@ public class AuthController implements DisposableBean, InitializingBean {
 		} else if (numSessions >= 3) {
 			// Maximum of three sessions reached
 			System.out.println("Maximum number of sessions reached for this user");
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Maximum number of sessions reached for this user.");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Maximum number of sessions reached for this user." );
 		} else {
+
 			numSessions++;
 		}
 
 		sessionCountMap.put(email, numSessions);
+		session.setAttribute("userEmail", loginRequest.getEmail());
 
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		List<String> roles = userDetails.getAuthorities().stream()
@@ -236,24 +238,21 @@ public class AuthController implements DisposableBean, InitializingBean {
 		return ResponseEntity.ok(new MessageResponse("Logout successful!"));
 	}
 
-	@GetMapping ("/destroy")
-	public String dst() throws Exception {
-		destroy();
-		return "ok";
-	}
-	@Override
-	public void destroy() throws Exception {
-		// Decrement the session count for the current user when the session is destroyed
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
-			UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-			String email = userDetails.getEmail();
+
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(HttpSession session,@RequestBody String email) {
+
+		if (email != null) {
 			Integer numSessions = sessionCountMap.get(email);
-			if (numSessions != null) {
+
+
+			if (numSessions != null && numSessions > 0) {
 				numSessions--;
 				sessionCountMap.put(email, numSessions);
 			}
+			session.invalidate(); // Clear the user's session
 		}
+		return ResponseEntity.ok("Logged out successfully.");
 	}
 	@Override
 	public void afterPropertiesSet() throws Exception {
