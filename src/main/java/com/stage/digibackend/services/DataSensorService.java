@@ -88,6 +88,16 @@ public class DataSensorService implements IDataSensorService {
         dataSensor.setLatestUpdate(latestUpdate);
         dataSensor.setGrowthStatus(growthStatus);
 
+        if(sensor.getIsPulse()){
+            growthStatus = GrowthStatus.POSITIVE ;
+            data = sensor.getPulseValue() ;
+            if(sensor.getPulseInit() != null ||sensor.getPulseInit()  >= 0 )
+            sensor.setPulseInit(sensor.getPulseInit() + data);
+            else
+                sensor.setPulseInit(data);
+
+            sensorRepository.save(sensor) ;
+        }
         switch (growthStatus) {
             case POSITIVE:
                 if (dataSensor.getTotal() != null) {
@@ -209,6 +219,7 @@ public class DataSensorService implements IDataSensorService {
         DataSensor dataSensor = dataSensorRepository.findDataSensorByDeviceAndSensor(device, sensor);
         return dataSensor.getDataSensorId();
     }
+
 }
 
 
