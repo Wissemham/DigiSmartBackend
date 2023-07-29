@@ -160,8 +160,26 @@ public class HistoriqueController {
         }
     }
 
+
     @GetMapping("/lastMonth/{idDevice}")
-    List<Historique> lastMonth(@PathVariable String idDevice){
+    List<Historique> lastMonth(@PathVariable String idDevice) {
         return historiqueService.lastMonthHistorique(idDevice);
+    }
+    @GetMapping("/generateDeviceHistoriquePdfTable/{deviceId}")
+    public ResponseEntity<ByteArrayResource> generateDeviceHistoriquePdfTable(@PathVariable String deviceId,
+                                                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate ,
+                                                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate endDate) throws IOException {
+
+        byte[] pdfBytes = historiqueService.generateDeviceHistoriquePdfTable(deviceId,startDate,endDate);
+
+        ByteArrayResource resource = new ByteArrayResource(pdfBytes);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=device_historique_table.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .contentLength(pdfBytes.length)
+                .body(resource);
+
+
     }
 }

@@ -1,5 +1,6 @@
 package com.stage.digibackend.controllers;
 
+import com.mongodb.lang.Nullable;
 import com.stage.digibackend.Collections.DataSensor;
 import com.stage.digibackend.services.IDataSensorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class DataSensorController {
     @PutMapping("loadDataInSensorDevice/{idSensor}/{idDevice}")
     public DataSensor loadDataInSensorDevice(@PathVariable String idSensor,
                                              @PathVariable String idDevice,
-                                             @RequestBody DataSensor dataSensor) {
+                                             @RequestBody @Nullable DataSensor dataSensor) {
         return iDataSensorService.loadDataInSensorDevice(idSensor,idDevice,dataSensor.getData(),dataSensor.getGrowthStatus(),dataSensor.getLatestUpdate());
     }
 
