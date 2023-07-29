@@ -3,6 +3,8 @@ package com.stage.digibackend.controllers;
 import com.stage.digibackend.Collections.Historique;
 import com.stage.digibackend.dto.ExportDataRequest;
 import com.stage.digibackend.services.IhistoriqueService;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/historique")
 @CrossOrigin(origins = "*")
+@EnableCaching
 public class HistoriqueController {
    IhistoriqueService historiqueService ;
 
@@ -117,7 +120,16 @@ public class HistoriqueController {
         Pageable pageable = PageRequest.of(page, pageSize);
         return historiqueService.getHistorique(pageable);
     }
+    @GetMapping("/loaddMoreHistoricDevice/{deviceId}")
+    public Page<Historique> getHistoriqueByyDevice(@PathVariable String deviceId,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "10") int pageSize) {
 
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return historiqueService.findHistoriqueByDevicePagebale(deviceId, pageable);
+
+    }
+    @Cacheable(cacheNames = "Device", key = "#deviceId + '-' + #page + '-' + #pageSize")
     @GetMapping("/loadMoreHistoricDevice/{deviceId}")
     public Page<Historique> getHistoriqueByDevice(@PathVariable String deviceId,
                                                   @RequestParam(defaultValue = "0") int page,
@@ -146,5 +158,22 @@ public class HistoriqueController {
         } catch (Exception e) {
             return e.getMessage();
         }
+    }
+
+    @GetMapping("/generateDeviceHistoriquePdfTable/{deviceId}")
+    public ResponseEntity<ByteArrayResource> generateDeviceHistoriquePdfTable(@PathVariable String deviceId,
+                                                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate ,
+                                                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate endDate) throws IOException {
+
+        byte[] pdfBytes = historiqueService.generateDeviceHistoriquePdfTable(deviceId,startDate,endDate);
+
+        ByteArrayResource resource = new ByteArrayResource(pdfBytes);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=device_historique_table.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .contentLength(pdfBytes.length)
+                .body(resource);
+
     }
 }
