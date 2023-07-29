@@ -10,21 +10,11 @@ import java.util.Date;
 @Data
 public class CsvData {
     private String historyId;
-    private String date;
-    private String action;
-    private String deviceId;
+    private String startDate;
+    private String endDate;
     private String deviceName;
-    private String macAddress;
-    private String sensorId;
     private String sensorName;
-    private String sensorUnit;
-    private double rangeMin;
-    private double rangeMax;
-    private Boolean signal;
-    private double coefficientA;
-    private double coefficientB;
-    private String latestUpdate;
-    private String growthStatus;
     private double data;
-    private double total;
+    private String growthStatus;
+
 }
