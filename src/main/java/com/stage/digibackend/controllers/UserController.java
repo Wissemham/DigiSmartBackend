@@ -74,7 +74,7 @@ public class UserController {
     {
         return iUserService.getUserById(userId);
     }
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
+   // @PreAuthorize("hasAnyAuthority('SUPER_ADMIN')")
     @PutMapping("/updateuser/{userId}")
     public User modifyUser(@PathVariable String userId,@RequestBody User user) {
         return iUserService.updateUser(userId,user);
