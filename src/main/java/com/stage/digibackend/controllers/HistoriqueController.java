@@ -160,6 +160,11 @@ public class HistoriqueController {
         }
     }
 
+
+    @GetMapping("/lastMonth/{idDevice}")
+    List<Historique> lastMonth(@PathVariable String idDevice) {
+        return historiqueService.lastMonthHistorique(idDevice);
+    }
     @GetMapping("/generateDeviceHistoriquePdfTable/{deviceId}")
     public ResponseEntity<ByteArrayResource> generateDeviceHistoriquePdfTable(@PathVariable String deviceId,
                                                                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate ,
@@ -174,6 +179,7 @@ public class HistoriqueController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .contentLength(pdfBytes.length)
                 .body(resource);
+
 
     }
 }

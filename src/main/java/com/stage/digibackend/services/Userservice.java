@@ -1,9 +1,12 @@
 package com.stage.digibackend.services;
 
+import com.stage.digibackend.Collections.ERole;
+import com.stage.digibackend.Collections.Role;
 import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.Configuration.TunisieSmsConfig;
 import com.stage.digibackend.dto.OtpStatus;
 import com.stage.digibackend.dto.PasswordResetResponse;
+import com.stage.digibackend.repository.RoleRepository;
 import com.stage.digibackend.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +38,9 @@ public class Userservice implements IUserservice {
     private TunisieSmsConfig tunisiesmsConfig;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private RoleRepository roleRepository;
+
     public void register(User user, String siteURL) throws UnsupportedEncodingException, MessagingException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -110,6 +117,15 @@ public class Userservice implements IUserservice {
     @Override
     public User updateUser(String userId,User userRequest) {
             User existingUser = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            if(!userRequest.getEmail2().equals(existingUser.getEmail2()) ){
+                System.out.println(userRequest.getEmail2());
+                System.out.println(existingUser.getEmail2());
+                System.out.println("different mail");
+                Optional<User> u = userRepository.findByEmailorEmail2(userRequest.getEmail2());
+                if(u.isPresent()){
+                    throw new RuntimeException("email use");
+                }
+            }
             if (userRequest.getTelephone() != null && !userRequest.getTelephone().isEmpty()) {
                 existingUser.setTelephone(userRequest.getTelephone());
             }
@@ -145,7 +161,7 @@ public class Userservice implements IUserservice {
                 userRequest.setVerify(existingUser.getVerify());
             }
             existingUser.setVerify(userRequest.getVerify());
-
+            existingUser.setEmail2(userRequest.getEmail2());
             return userRepository.save(existingUser);
         }
 
@@ -158,13 +174,17 @@ public class Userservice implements IUserservice {
 
     @Override
     public List<User> ListAdmin() {
-        return   userRepository.findByRoleNot("6489c4d71478ef0f49b46b90");
+        Optional<Role> r = roleRepository.findByName(ERole.ADMIN);
+        Role r1 = r.get();
+        return   userRepository.findByRoleNot(r1.getId());
     }
 
 
     @Override
     public List<User> ListAllClient() {
-        return userRepository.findByRoleNot("648a2d798fce3961ef16dc4e");
+        Optional<Role> r = roleRepository.findByName(ERole.CLIENT);
+        Role r1 = r.get();
+        return userRepository.findByRoleNot(r1.getId());
     }
 
     @Override
@@ -497,7 +517,5 @@ public class Userservice implements IUserservice {
         return response;
 
     }
-
-
-
+    
 }
