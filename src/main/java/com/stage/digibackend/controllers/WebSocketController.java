@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @CrossOrigin(origins = "*")
 
 public class WebSocketController {
-
     private final SimpMessagingTemplate messagingTemplate;
     @Autowired
     IDeviceService ideviceService;
