@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @CrossOrigin(origins = "*")
 
 public class WebSocketController {
-
     private final SimpMessagingTemplate messagingTemplate;
     @Autowired
     IDeviceService ideviceService;
@@ -20,8 +19,8 @@ public class WebSocketController {
     public WebSocketController(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
-    @MessageMapping("/sendNotification/{clientId}")
-    public void sendNotification(@DestinationVariable String clientId, String message) {
-        messagingTemplate.convertAndSendToUser(clientId, "/queue/notification", message);
+    @MessageMapping("/sendNotification/{deviceId}")
+    public void sendNotification(@DestinationVariable String deviceId) {
+        ideviceService.checkAndSendNotification(deviceId);
     }
 }

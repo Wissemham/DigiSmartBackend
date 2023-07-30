@@ -21,4 +21,5 @@ List<Sensor> getSensorsList(String deviceId);
 List<Device> getAdminDevices(String adminId);
     List<Device> getClientDevices(String clientId);
 String setDeviceState(String deviceId);
+void checkAndSendNotification(String deviceId);
 }

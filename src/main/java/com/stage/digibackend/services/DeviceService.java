@@ -1,9 +1,11 @@
 package com.stage.digibackend.services;
+import com.stage.digibackend.Collections.DataSensor;
 import com.stage.digibackend.Collections.Device;
 import com.stage.digibackend.Collections.Sensor;
 import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.dto.OtpStatus;
 import com.stage.digibackend.dto.deviceResponse;
+import com.stage.digibackend.repository.DataSensorRepository;
 import com.stage.digibackend.repository.DeviceRepository;
 import com.stage.digibackend.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -25,6 +27,8 @@ public class DeviceService implements IDeviceService {
     @Autowired
     DeviceRepository deviceRepository;
     private final SimpMessagingTemplate messagingTemplate;
+@Autowired
+    DataSensorRepository dataSensorRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -517,7 +521,29 @@ public class DeviceService implements IDeviceService {
         return clientDevices;
     }
 /*Send notification */
+private void sendNotification(String clientId, String message) {
+    messagingTemplate.convertAndSendToUser(clientId, "/sensorNotification", message);
+}
+    @Override
+    public void checkAndSendNotification(String deviceId){
+        Device existingDevice = deviceRepository.findById(deviceId).get();
+        if (existingDevice == null) {
 
+            System.out.println("Device not found!");
+            return;
+        }
+        List<Sensor> sensorList=getSensorsList(deviceId);
+        for (Sensor s : sensorList) {
+            DataSensor dataSensor = dataSensorRepository.findDataSensorByDeviceAndSensor(existingDevice,s);
+            if(dataSensor.getData()<s.getRangeMin() || dataSensor.getData()>s.getRangeMax())
+            {
+                String notificationMessage = "Sensor value warning! The current value is: " + dataSensor.getData();
+                sendNotification(existingDevice.getIdAdmin(), notificationMessage);
+                sendNotification(existingDevice.getIdClient(),notificationMessage);
+            }
+        }
+
+    }
 
 
 }
