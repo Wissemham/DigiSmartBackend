@@ -33,12 +33,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+
+
 import java.time.format.DateTimeFormatter;
+
 import java.util.*;
 
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+
+
+import java.util.ArrayList;
 
 
 import java.util.stream.Collectors;
@@ -433,9 +440,19 @@ public class HistoriqueService implements IhistoriqueService {
     }
 
     @Override
+
+    public List<Historique> lastMonthHistorique(String idDevice) {
+
+        LocalDateTime lastMonthDate = LocalDateTime.now().minusMonths(7);
+        Device d = deviceRepository.findById(idDevice).get();
+        return historiqueRepository.findHistoriqueForLastMonth(d,lastMonthDate);
+    }
+
+
     public byte[] generateDeviceHistoriquePdfTable(String deviceId, LocalDate startDate, LocalDate endDate) throws IOException {
         LocalDateTime startDateTime = LocalDateTime.of(startDate, LocalTime.MIN);
         LocalDateTime endDateTime = LocalDateTime.of(endDate, LocalTime.MAX);
+
 
         if (startDateTime.isAfter(endDateTime)) {
             throw new IllegalArgumentException("start date cannot be after end date.");
