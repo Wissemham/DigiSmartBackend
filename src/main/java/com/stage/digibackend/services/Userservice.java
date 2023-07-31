@@ -315,9 +315,9 @@ public class Userservice implements IUserservice {
                 "                      <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"border-collapse:separate;line-height:100%;\">\n" +
                 "                        <tbody><tr>\n" +
                 "                          <td align=\"center\" bgcolor=\"#54595f\" role=\"presentation\" style=\"border:none;border-radius:30px;cursor:auto;mso-padding-alt:10px 25px;background:#54595f;\" valign=\"middle\">\n" +
-                "                            <button disabled \"" +
+                "                            <div  \"" +
                 "\" style=\"display: inline-block;  background: #54595f; color: white; font-family: Nunito, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 30px; margin: 0; text-decoration: none; text-transform: none; padding: 10px 25px; mso-padding-alt: 0px; border-radius: 30px;\" target=\"_blank\"> " +randomCode+
-                "</button>\n" +
+                "</div>\n" +
                 "                          </td>\n" +
                 "                        </tr>\n" +
                 "                      </tbody></table>\n" +
