@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 
@@ -238,6 +240,35 @@ PasswordResetResponse sendSms(@PathVariable String phone){
         }
     }
 
+    @PostConstruct
+    public void createDefaultSuperAdmin() {
+        // Check if the default user already exists
+        Optional<User> u = userRepository.findByEmailorEmail2("your_default_email");
+        if (!u.isPresent()) {
+            if (!userRepository.existsByUsername("your_default_username_here")) {
+                // Create a new user with the role "super-admin"
+                User defaultUser = new User();
+                defaultUser.setUsername("your_default_username_here");
+                defaultUser.setTelephone("your_default_telephone_here");
+                defaultUser.setGenre("your_default_genre_here");
+                defaultUser.setPassword(passwordEncoder.encode("dig2S"));
+                defaultUser.setEnabled(true);
+                // Find or create the "super-admin" role
+                Role superAdminRole = roleRepository.findByName(ERole.SUPER_ADMIN)
+                        .orElseGet(() -> {
+                            Role role = new Role();
+                            role.setName(ERole.SUPER_ADMIN);
+                            return roleRepository.save(role);
+                        });
+                // Assign the "super-admin" role to the default user
+                Set<Role> roles = new HashSet<>();
+                roles.add(superAdminRole);
+                defaultUser.setRoles(roles);
+                // Save the default user to the database
+                userRepository.save(defaultUser);
+            }
+        }
+    }
 
 
 
