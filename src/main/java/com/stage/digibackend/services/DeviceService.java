@@ -1,29 +1,35 @@
 package com.stage.digibackend.services;
+import com.stage.digibackend.Collections.DataSensor;
 import com.stage.digibackend.Collections.Device;
 import com.stage.digibackend.Collections.Sensor;
 import com.stage.digibackend.Collections.User;
 import com.stage.digibackend.dto.OtpStatus;
 import com.stage.digibackend.dto.deviceResponse;
+import com.stage.digibackend.repository.DataSensorRepository;
 import com.stage.digibackend.repository.DeviceRepository;
 import com.stage.digibackend.repository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+
 @Service
 public class DeviceService implements IDeviceService {
     @Autowired
     DeviceRepository deviceRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+@Autowired
+    DataSensorRepository dataSensorRepository;
+
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -32,6 +38,10 @@ public class DeviceService implements IDeviceService {
     private JavaMailSender mailSender;
     @Autowired
     IDataSensorService dataSensor;
+    @Autowired
+    public DeviceService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
     Boolean verifyMacAdd(String addMac)
     {
          final String MAC_ADDRESS_PATTERN = "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$";
@@ -52,9 +62,16 @@ public class DeviceService implements IDeviceService {
         if (!verifyMacAdd(macAdd)) {
             return "Error: Invalid MAC address";
         }
-
         Device savedDevice = deviceRepository.save(device);
+       /* List <Sensor> sensorList= getSensorsList(savedDevice.getDeviceId());
+        Map<String, Integer> sensorCountMap = new HashMap<>();
+        for (Sensor sensor : sensorList) {
+            int sensorCount = sensorCountMap.getOrDefault(sensor, 0) + 1;
+            sensorCountMap.put(sensor.getSensorName(), sensorCount);
+            String modifiedSensorName = sensor.getSensorName() + sensorCount;
+            sensor.setSensorName(modifiedSensorName);
 
+        }*/
         for (String sensor : savedDevice.getSensorList()) {
             dataSensor.affecteSensorDevice(sensor, savedDevice.getDeviceId());
         }
@@ -502,6 +519,30 @@ public class DeviceService implements IDeviceService {
             }
         }
         return clientDevices;
+    }
+/*Send notification */
+private void sendNotification(String clientId, String message) {
+    messagingTemplate.convertAndSendToUser(clientId, "/sensorNotification", message);
+}
+    @Override
+    public void checkAndSendNotification(String deviceId){
+        Device existingDevice = deviceRepository.findById(deviceId).get();
+        if (existingDevice == null) {
+
+            System.out.println("Device not found!");
+            return;
+        }
+        List<Sensor> sensorList=getSensorsList(deviceId);
+        for (Sensor s : sensorList) {
+            DataSensor dataSensor = dataSensorRepository.findDataSensorByDeviceAndSensor(existingDevice,s);
+            if(dataSensor.getData()<s.getRangeMin() || dataSensor.getData()>s.getRangeMax())
+            {
+                String notificationMessage = "Sensor value warning! The current value is: " + dataSensor.getData();
+                sendNotification(existingDevice.getIdAdmin(), notificationMessage);
+                sendNotification(existingDevice.getIdClient(),notificationMessage);
+            }
+        }
+
     }
 
 

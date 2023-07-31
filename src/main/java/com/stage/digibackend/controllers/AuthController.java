@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController implements DisposableBean, InitializingBean {
+public class AuthController implements InitializingBean {
 	@Autowired
 	AuthenticationManager authenticationManager;
 
@@ -92,7 +92,7 @@ public class AuthController implements DisposableBean, InitializingBean {
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpSession session) {
 
 		System.out.println(loginRequest.getEmail());
-		Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+		Optional<User> userOptional = userRepository.findByEmailorEmail2(loginRequest.getEmail());
 
 		System.out.println(userOptional);
 		if (!userOptional.isPresent()) {
@@ -105,25 +105,27 @@ public class AuthController implements DisposableBean, InitializingBean {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Verify your account");
 		}
 		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+				new UsernamePasswordAuthenticationToken(u.getEmail(), loginRequest.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = jwtUtils.generateJwtToken(authentication);
 		String ipAddress = getIpAddress();
 		System.out.println(ipAddress);
-		String email = loginRequest.getEmail();
-		Integer numSessions = sessionCountMap.get(email);
+		//String email = u.getEmail();
+		Integer numSessions = sessionCountMap.get(u.getEmail());
 		if (numSessions == null) {
 			numSessions = 1;
-		} else if (numSessions >= 3) {
+		} else if (numSessions >= 2) {
 			// Maximum of three sessions reached
 			System.out.println("Maximum number of sessions reached for this user");
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Maximum number of sessions reached for this user.");
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Maximum number of sessions reached for this user." );
 		} else {
+
 			numSessions++;
 		}
 
-		sessionCountMap.put(email, numSessions);
+		sessionCountMap.put(u.getEmail(), numSessions);
+		session.setAttribute("userEmail", u.getEmail());
 
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		List<String> roles = userDetails.getAuthorities().stream()
@@ -236,24 +238,22 @@ public class AuthController implements DisposableBean, InitializingBean {
 		return ResponseEntity.ok(new MessageResponse("Logout successful!"));
 	}
 
-	@GetMapping ("/destroy")
-	public String dst() throws Exception {
-		destroy();
-		return "ok";
-	}
-	@Override
-	public void destroy() throws Exception {
-		// Decrement the session count for the current user when the session is destroyed
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
-			UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-			String email = userDetails.getEmail();
-			Integer numSessions = sessionCountMap.get(email);
-			if (numSessions != null) {
+
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout(HttpSession session,@RequestBody String email) {
+		Optional<User> user = userRepository.findByEmailorEmail2(email);
+		if (user.isPresent()) {
+			User u = user.get();
+			Integer numSessions = sessionCountMap.get(u.getEmail());
+
+
+			if (numSessions != null && numSessions > 0) {
 				numSessions--;
-				sessionCountMap.put(email, numSessions);
+				sessionCountMap.put(u.getEmail(), numSessions);
 			}
+			session.invalidate(); // Clear the user's session
 		}
+		return ResponseEntity.ok("Logged out successfully.");
 	}
 	@Override
 	public void afterPropertiesSet() throws Exception {

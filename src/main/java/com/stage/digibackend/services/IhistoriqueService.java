@@ -38,4 +38,10 @@ public interface IhistoriqueService {
 
     void exportToCSV(String deviceId, LocalDateTime startDate, LocalDateTime endDate);
 
+
+    public List<Historique> lastMonthHistorique(String idDevice);
+
+
+    byte[] generateDeviceHistoriquePdfTable(String deviceId, LocalDate startDate, LocalDate endDate) throws IOException;
+
 }

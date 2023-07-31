@@ -1,6 +1,6 @@
 package com.stage.digibackend.services;
+import com.itextpdf.kernel.geom.PageSize;
 import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -20,35 +20,35 @@ import com.stage.digibackend.repository.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
+import com.itextpdf.layout.element.Table;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
+
+
+import java.time.format.DateTimeFormatter;
+
+import java.util.*;
 
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
-import java.util.Date;
 
-import java.util.List;
-import java.util.Map;
+
 import java.util.stream.Collectors;
-
 @Service
 public class HistoriqueService implements IhistoriqueService {
     @Autowired
@@ -398,6 +398,11 @@ public class HistoriqueService implements IhistoriqueService {
                 filteredHist.add(hist);
             }
         }
+        System.out.println(filteredHist);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        String formattedStartDate = startDate.format(formatter);
+        String formattedEndDate = endDate.format(formatter);
 
         String userHomeDir = System.getProperty("user.home");
         String downloadsDir = userHomeDir + File.separator + "Downloads";
@@ -406,61 +411,132 @@ public class HistoriqueService implements IhistoriqueService {
 
         try (ICsvBeanWriter csvWriter = new CsvBeanWriter(new FileWriter(csvFilePath),
                 CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE)) {
-            String[] header = {"historyId", "date", "action", "deviceId", "deviceName", "macAddress",
-                    "sensorId", "sensorName", "sensorUnit", "rangeMin", "rangeMax", "signal",
-                    "coefficientA", "coefficientB", "latestUpdate", "growthStatus", "data", "total"};
-
+            String[] header = {"historyId", "startDate", "endDate","deviceName", "sensorName",
+                     "data" ,"growthStatus"};
             csvWriter.writeHeader(header);
-
             CellProcessor[] processors = new CellProcessor[]{
                     new Optional(), // historyId
                     new Optional(), // date
-                    new Optional(), // action
-                    new Optional(), // deviceId
+                    new Optional(),//date
                     new Optional(), // deviceName
-                    new Optional(), // macAddress
-                    new Optional(), // sensorId
                     new Optional(), // sensorName
-                    new Optional(), // sensorUnit
-                    new Optional(), // rangeMin
-                    new Optional(), // rangeMax
-                    new Optional(), // signal
-                    new Optional(), // coefficientA
-                    new Optional(), // coefficientB
-                    new Optional(), // latestUpdate
-                    new Optional(), // growthStatus
                     new Optional(), // data
-                    new Optional() // total
+                    new Optional(), // growthStatus
             };
-
             for (Historique hist : filteredHist) {
                 CsvData csvData = new CsvData();
                 csvData.setHistoryId(String.valueOf(hist.getId()));
-                csvData.setDate(hist.getDate().toString());
-                csvData.setAction(hist.getAction());
-                csvData.setDeviceId(hist.getDataSensor().getDevice().getDeviceId());
+                csvData.setStartDate(startDate.format(formatter));
+                csvData.setEndDate(formattedEndDate);
                 csvData.setDeviceName(hist.getDataSensor().getDevice().getNom());
-                csvData.setMacAddress(hist.getDataSensor().getDevice().getMacAdress());
-                csvData.setSensorId(hist.getDataSensor().getSensor().getSensorId());
                 csvData.setSensorName(hist.getDataSensor().getSensor().getSensorName());
-                csvData.setSensorUnit(hist.getDataSensor().getSensor().getSymboleUnite());
-                csvData.setRangeMin(hist.getDataSensor().getSensor().getRangeMin());
-                csvData.setRangeMax(hist.getDataSensor().getSensor().getRangeMax());
-                csvData.setSignal(hist.getDataSensor().getSensor().getSignal());
-                csvData.setCoefficientA(hist.getDataSensor().getSensor().getA());
-                csvData.setCoefficientB(hist.getDataSensor().getSensor().getB());
-                csvData.setLatestUpdate(hist.getDataSensor().getLatestUpdate().toString());
-                csvData.setGrowthStatus(hist.getDataSensor().getGrowthStatus().toString());
                 csvData.setData(hist.getDataSensor().getData());
-                csvData.setTotal(hist.getDataSensor().getTotal());
-
+                csvData.setGrowthStatus(hist.getDataSensor().getGrowthStatus().toString());
                 csvWriter.write(csvData, header, processors);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    @Override
 
+    public List<Historique> lastMonthHistorique(String idDevice) {
+
+        LocalDateTime lastMonthDate = LocalDateTime.now().minusMonths(7);
+        Device d = deviceRepository.findById(idDevice).get();
+        return historiqueRepository.findHistoriqueForLastMonth(d,lastMonthDate);
+    }
+
+
+    public byte[] generateDeviceHistoriquePdfTable(String deviceId, LocalDate startDate, LocalDate endDate) throws IOException {
+        LocalDateTime startDateTime = LocalDateTime.of(startDate, LocalTime.MIN);
+        LocalDateTime endDateTime = LocalDateTime.of(endDate, LocalTime.MAX);
+
+
+        if (startDateTime.isAfter(endDateTime)) {
+            throw new IllegalArgumentException("start date cannot be after end date.");
+        }
+
+        if (startDateTime.plusMonths(3).isBefore(endDateTime)) {
+            throw new IllegalArgumentException("maximum allowed period is 3 months.");
+        }
+
+        Device device = deviceRepository.findById(deviceId)
+                .orElseThrow(() -> new IllegalArgumentException("Device not found"));
+
+        List<Historique> historiqueList = findHistoriqueByDevice(deviceId);
+
+        historiqueList = filterHistoriqueByDateRange(historiqueList, startDate, endDate);
+
+        // Create a new PDF document and set the page orientation to landscape (horizontal)
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(byteArrayOutputStream);
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf, PageSize.A4.rotate()); // Landscape orientation
+
+        // Page content
+        document.add(new Paragraph("Device historic: " + device.getDeviceCode()).setBold());
+        document.add(new Paragraph("Period: du " + startDate + " au " + endDate).setBold());
+        document.add(new Paragraph("\n"));
+
+        // Create a table for displaying sensor data with a maximum of 8 sensors
+        int maxSensors = 8;
+        int numColumns = Math.min(maxSensors, device.getSensorList().size()) + 1; // +1 for the date/time column
+        Table table = new Table(numColumns);
+        table.addHeaderCell("Date et heures");
+        int sensorCount = 0;
+        for (String sensorName : device.getSensorList()) {
+            if (sensorCount < maxSensors) {
+                Sensor s = sensorRepository.findById(sensorName)
+                        .orElseThrow(() -> new IllegalArgumentException("Sensor not found with id : " + sensorName));
+                table.addHeaderCell(s.getSensorName());
+                sensorCount++;
+            } else {
+                break; // Limit the number of sensor columns to the maximum (8 in this case)
+            }
+        }
+        table.setWidthPercent(100);
+
+        // Group data by hour and sort by date in ascending order
+        Map<LocalDateTime, DataSensor> dataByHour = new TreeMap<>();
+        for (Historique historique : historiqueList) {
+            LocalDateTime hour = historique.getDate().withMinute(0).withSecond(0).withNano(0);
+            dataByHour.put(hour, historique.getDataSensor());
+        }
+
+        // Add data rows to the table for each hour
+        for (LocalDateTime hour : dataByHour.keySet()) {
+            table.addCell(hour.toString()); // Date and Time for each hour
+
+            DataSensor dataSensor = dataByHour.get(hour);
+            sensorCount = 0;
+            for (String sensorName : device.getSensorList()) {
+                if (sensorCount < maxSensors) {
+                    Sensor sensor = sensorRepository.findById(sensorName)
+                            .orElseThrow(() -> new IllegalArgumentException("Sensor not found with id : " + sensorName));
+
+                    if (dataSensor.getSensor().equals(sensor)) {
+                        table.addCell(formatDataForDisplay(dataSensor.getData())); // Format the data appropriately
+                    } else {
+                        // Add an empty cell for sensors without data for the current hour
+                        table.addCell("");
+                    }
+                    sensorCount++;
+                } else {
+                    break; // Limit the number of sensor columns to the maximum (8 in this case)
+                }
+            }
+        }
+
+        document.add(table);
+        document.close();
+
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private String formatDataForDisplay(Double dataPoint) {
+        // Format the double data to a desired format (e.g., with two decimal places)
+        return String.format("%.2f", dataPoint);
+    }
 }
