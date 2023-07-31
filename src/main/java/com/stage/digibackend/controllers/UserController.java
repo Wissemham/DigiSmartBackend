@@ -248,6 +248,7 @@ PasswordResetResponse sendSms(@PathVariable String phone){
             if (!userRepository.existsByUsername("your_default_username_here")) {
                 // Create a new user with the role "super-admin"
                 User defaultUser = new User();
+                defaultUser.setEmail("your_default_email");
                 defaultUser.setUsername("your_default_username_here");
                 defaultUser.setTelephone("your_default_telephone_here");
                 defaultUser.setGenre("your_default_genre_here");
